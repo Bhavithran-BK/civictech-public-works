@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { getProjectById, addCitizenReport } from '@/lib/api';
+import { fetchProjectById, postCitizenReport } from '@/lib/api';
 import { Project, ReportKind } from '@/lib/types';
 import { ArrowLeft, Camera, MapPin, CheckCircle, AlertTriangle, ShieldCheck, Loader2 } from 'lucide-react';
 import Link from 'next/link';
@@ -23,8 +23,9 @@ function ReportContent() {
 
   useEffect(() => {
     if (projectId) {
-      const p = getProjectById(projectId);
-      if (p) setProject(p);
+      fetchProjectById(projectId).then((p) => {
+        if (p) setProject(p);
+      });
     }
   }, [projectId]);
 
@@ -56,7 +57,7 @@ function ReportContent() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!project || !description.trim()) return;
 
@@ -65,18 +66,13 @@ function ReportContent() {
     const lng = gpsLocation?.lng || project.coordinates.lng;
 
     try {
-      const res = addCitizenReport(
-        project.id,
-        {
-          projectId: project.id,
-          kind,
-          description,
-          reportedLat: lat,
-          reportedLng: lng,
-          reporterHandle: reporterHandle.trim() || 'Anonymous Resident'
-        },
-        project.coordinates
-      );
+      const res = await postCitizenReport(project.id, {
+        kind,
+        description,
+        reportedLat: lat,
+        reportedLng: lng,
+        reporterHandle: reporterHandle.trim() || 'Anonymous Resident'
+      });
 
       setResult({
         success: true,

@@ -216,13 +216,12 @@ def add_citizen_report_db(project_id: str, report_data: Dict[str, Any]) -> Dict[
                 p["citizenReports"] = []
             p["citizenReports"].insert(0, new_rep)
             
-            # Recalculate Health Score
-            new_score = calculate_health_score(p)
+            # Recalculate Health Score with breakdown
+            new_score, breakdown = calculate_health_score(p)
             p["healthScore"] = new_score
             
-            # Auto-flip status rule
-            no_act_count = len([r for r in p["citizenReports"] if r["kind"] == "no_activity" and r["verified"]])
-            if new_score < 35 or no_act_count >= 3:
+            # Auto-flip status rule based on algorithmic audit breakdown
+            if breakdown["autoFlagStalled"]:
                 p["status"] = "stalled"
             elif new_score < 65:
                 p["status"] = "delayed"
@@ -232,7 +231,7 @@ def add_citizen_report_db(project_id: str, report_data: Dict[str, Any]) -> Dict[
                 p["status"] = "on_track"
                 
             save_projects(projects)
-            return {"report": new_rep, "project": p}
+            return {"report": new_rep, "project": p, "breakdown": breakdown}
             
     raise ValueError("Project not found")
 
@@ -258,7 +257,8 @@ def log_delay_db(project_id: str, delay_data: Dict[str, Any]) -> Dict[str, Any]:
             p["delays"].insert(0, delay_entry)
             p["plannedEndDate"] = delay_data["newEndDate"]
             p["status"] = "delayed"
-            p["healthScore"] = calculate_health_score(p)
+            new_score, _ = calculate_health_score(p)
+            p["healthScore"] = new_score
             save_projects(projects)
             return p
     raise ValueError("Project not found")

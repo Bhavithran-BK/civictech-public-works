@@ -36,6 +36,7 @@ def test_health_score_penalty_and_stalled_threshold():
             {"kind": "no_activity", "verified": True}
         ]
     }
-    score = calculate_health_score(sample_proj)
+    score, breakdown = calculate_health_score(sample_proj)
     # Starts at 100, -12 for stale, -15 for delay, -36 for two no-activity reports = ~37
     assert score <= 40
+    assert "citizen_audit_penalties" in breakdown["penalties"]

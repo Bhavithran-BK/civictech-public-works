@@ -367,8 +367,9 @@ function ProjectDetailContent() {
         isOpen={isReportModalOpen}
         onClose={() => setIsReportModalOpen(false)}
         onReportSubmitted={() => {
-          const fresh = getProjectById(project.id);
-          if (fresh) setProject(fresh);
+          fetchProjectById(project.id).then((fresh) => {
+            if (fresh) setProject(fresh);
+          });
         }}
       />
 

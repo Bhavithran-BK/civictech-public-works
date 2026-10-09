@@ -50,6 +50,8 @@ class ProjectConflictOut(BaseModel):
     conflictType: str
     suggestedAction: str
     estimatedAvoidableCostInr: float
+    jointWindowStart: Optional[str] = None
+    jointWindowEnd: Optional[str] = None
 
 class ProjectCreate(BaseModel):
     referenceCode: str
