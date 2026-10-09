@@ -132,10 +132,10 @@ export const ReportModal: React.FC<ReportModalProps> = ({
               </label>
               <div className="grid grid-cols-2 gap-2">
                 {[
-                  { id: 'no_activity', label: 'No Activity / Stalled', sub: 'Trench left abandoned', icon: '🛑' },
-                  { id: 'progress_verified', label: 'Work in Progress', sub: 'Active crew & machinery', icon: '👷' },
-                  { id: 'safety_hazard', label: 'Safety Hazard', sub: 'Unbarricaded open ditch', icon: '⚠️' },
-                  { id: 'poor_quality', label: 'Poor Quality Work', sub: 'Substandard road finish', icon: '🔍' }
+                  { id: 'no_activity', label: 'No Activity / Stalled', sub: 'Trench left abandoned', icon: <AlertOctagon className="w-4 h-4 text-purple-700" /> },
+                  { id: 'progress_verified', label: 'Work in Progress', sub: 'Active crew & machinery', icon: <Wrench className="w-4 h-4 text-blue-700" /> },
+                  { id: 'safety_hazard', label: 'Safety Hazard', sub: 'Unbarricaded open ditch', icon: <AlertTriangle className="w-4 h-4 text-amber-700" /> },
+                  { id: 'poor_quality', label: 'Poor Quality Work', sub: 'Substandard road finish', icon: <Search className="w-4 h-4 text-rose-700" /> }
                 ].map((item) => (
                   <button
                     key={item.id}
@@ -147,7 +147,7 @@ export const ReportModal: React.FC<ReportModalProps> = ({
                         : 'border-slate-300 bg-white text-slate-700 hover:border-slate-400 hover:bg-slate-50'
                     }`}
                   >
-                    <div className="text-sm mb-0.5">{item.icon}</div>
+                    <div className="mb-1">{item.icon}</div>
                     <div className="text-xs font-bold leading-tight">{item.label}</div>
                     <div className="text-[10px] text-slate-500 font-normal">{item.sub}</div>
                   </button>

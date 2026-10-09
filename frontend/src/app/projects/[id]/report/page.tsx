@@ -141,24 +141,23 @@ function ReportContent() {
                 </label>
                 <div className="grid grid-cols-2 gap-2">
                   {[
-                    { id: 'no_activity', label: 'No Activity / Stalled', icon: '🛑', sub: 'Trench left abandoned' },
-                    { id: 'progress_verified', label: 'Work in Progress', icon: '👷', sub: 'Crew & equipment active' },
-                    { id: 'safety_hazard', label: 'Hazardous / Open Ditch', icon: '⚠️', sub: 'No warning reflectors' },
-                    { id: 'poor_quality', label: 'Substandard Paving', icon: '🔍', sub: 'Uneven or flawed repair' }
+                    { id: 'no_activity', label: 'No Activity / Stalled', sub: 'Trench left abandoned' },
+                    { id: 'progress_verified', label: 'Work in Progress', sub: 'Crew & equipment active' },
+                    { id: 'safety_hazard', label: 'Hazardous / Open Ditch', sub: 'No warning reflectors' },
+                    { id: 'poor_quality', label: 'Substandard Paving', sub: 'Uneven or flawed repair' }
                   ].map((item) => (
                     <button
                       key={item.id}
                       type="button"
                       onClick={() => setKind(item.id as ReportKind)}
-                      className={`p-3 text-left rounded-xl border transition-all ${
+                      className={`p-3 text-left rounded border transition-all ${
                         kind === item.id
-                          ? 'border-blue-600 bg-blue-50/50 dark:bg-blue-950/40 text-blue-900 dark:text-blue-200 font-semibold shadow-xs'
-                          : 'border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-slate-300'
+                          ? 'border-blue-700 bg-blue-50/80 text-blue-900 font-semibold ring-1 ring-blue-700'
+                          : 'border-slate-300 text-slate-700 hover:border-slate-400 bg-white'
                       }`}
                     >
-                      <div className="text-base mb-1">{item.icon}</div>
-                      <div className="text-xs font-semibold">{item.label}</div>
-                      <div className="text-[10px] text-slate-500">{item.sub}</div>
+                      <div className="text-xs font-bold">{item.label}</div>
+                      <div className="text-[10px] text-slate-500 mt-0.5">{item.sub}</div>
                     </button>
                   ))}
                 </div>

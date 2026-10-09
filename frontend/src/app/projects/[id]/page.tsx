@@ -304,10 +304,10 @@ function ProjectDetailContent() {
                         <div key={rep.id} className="p-2.5 bg-slate-50 border border-slate-200 rounded space-y-1">
                           <div className="flex items-center justify-between">
                             <span className="text-xs font-bold text-slate-900">
-                              {rep.kind === 'no_activity' ? '🛑 Abandoned / Inactive' : rep.kind === 'safety_hazard' ? '⚠️ Open Hazard' : '👷 Work Ongoing'}
+                              {rep.kind === 'no_activity' ? '[Stalled] Inactive Site' : rep.kind === 'safety_hazard' ? '[Hazard] Open Trench' : '[Active] Work Ongoing'}
                             </span>
                             <span className="text-[10px] text-emerald-700 font-bold font-mono">
-                              ✓ Verified ({rep.distanceMeters}m from site)
+                              Verified ({rep.distanceMeters}m from site)
                             </span>
                           </div>
                           <p className="text-xs text-slate-700">{rep.description}</p>

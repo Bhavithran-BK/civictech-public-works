@@ -81,15 +81,16 @@ export default function InteractiveMap({
 
         // 2. Draw Centroid pin
         const hasConflict = proj.conflicts && proj.conflicts.length > 0;
+        const typeInitial = proj.type === 'road' ? 'RD' : proj.type === 'electricity' ? 'EL' : proj.type === 'metro' ? 'MR' : 'WT';
         const markerHtml = `
           <div class="relative group cursor-pointer transition-transform duration-200 ${isSelected ? 'scale-125 z-50' : 'hover:scale-110'}">
-            <div class="w-8 h-8 rounded-full flex items-center justify-center shadow-lg border-2 border-white text-white font-bold text-xs" style="background-color: ${color}">
-              ${proj.type === 'road' ? '🛣️' : proj.type === 'electricity' ? '⚡' : proj.type === 'metro' ? '🚇' : '💧'}
+            <div class="w-7 h-7 rounded-full flex items-center justify-center shadow-md border-2 border-white text-white font-black text-[10px] tracking-tight" style="background-color: ${color}">
+              ${typeInitial}
             </div>
             ${
               hasConflict
-                ? `<span class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-rose-600 border-2 border-white rounded-full animate-ping"></span>
-                   <span class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-rose-600 border-2 border-white rounded-full"></span>`
+                ? `<span class="absolute -top-1 -right-1 w-3 h-3 bg-rose-600 border-2 border-white rounded-full animate-ping"></span>
+                   <span class="absolute -top-1 -right-1 w-3 h-3 bg-rose-600 border-2 border-white rounded-full"></span>`
                 : ''
             }
           </div>
