@@ -33,6 +33,15 @@ class DelayCreate(BaseModel):
     newEndDate: str
     officerName: str
 
+class ProjectUpdateOut(BaseModel):
+    id: str
+    projectId: str
+    author: str
+    authorRole: str
+    note: str
+    createdAt: str
+    photos: List[str] = []
+
 class DelayOut(BaseModel):
     id: str
     projectId: str
@@ -91,6 +100,7 @@ class ProjectOut(BaseModel):
     corridorPath: List[List[float]]
     lastOfficialUpdateDaysAgo: int
     unresolvedReportsCount: int
+    updates: List[ProjectUpdateOut] = []
     delays: List[DelayOut] = []
     citizenReports: List[CitizenReportOut] = []
     conflicts: List[ProjectConflictOut] = []

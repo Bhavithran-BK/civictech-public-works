@@ -218,7 +218,7 @@ function ProjectDetailContent() {
                       : 'border-transparent text-slate-500 hover:text-slate-800'
                   }`}
                 >
-                  Official Log ({project.updates.length})
+                  Official Log ({(project.updates || []).length})
                 </button>
                 <button
                   onClick={() => setActiveTab('delays')}
@@ -228,7 +228,7 @@ function ProjectDetailContent() {
                       : 'border-transparent text-slate-500 hover:text-slate-800'
                   }`}
                 >
-                  Delay Reasons ({project.delays.length})
+                  Delay Reasons ({(project.delays || []).length})
                 </button>
                 <button
                   onClick={() => setActiveTab('reports')}
@@ -238,14 +238,14 @@ function ProjectDetailContent() {
                       : 'border-transparent text-slate-500 hover:text-slate-800'
                   }`}
                 >
-                  Citizen Check-ins ({project.citizenReports.length})
+                  Citizen Check-ins ({(project.citizenReports || []).length})
                 </button>
               </div>
 
               <div className="p-5">
                 {activeTab === 'timeline' && (
                   <div className="space-y-4">
-                    {project.updates.length === 0 ? (
+                    {(!project.updates || project.updates.length === 0) ? (
                       <p className="text-xs text-slate-400">No official milestone progress logged yet.</p>
                     ) : (
                       project.updates.map((upd) => (

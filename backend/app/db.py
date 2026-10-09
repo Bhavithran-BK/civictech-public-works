@@ -45,6 +45,17 @@ SEED_DATA: List[Dict[str, Any]] = [
         "officerName": "S. Ramanathan (Executive Engineer, GCC)"
       }
     ],
+    "updates": [
+      {
+        "id": "upd-1",
+        "projectId": "prj-101",
+        "author": "S. Ramanathan",
+        "authorRole": "Executive Engineer, Ward 172",
+        "note": "Sub-base aggregate compaction finished for 600m segment. Awaiting utility clearance from CMWSSB.",
+        "createdAt": "2026-10-01",
+        "photos": []
+      }
+    ],
     "citizenReports": [
       {
         "id": "rep-1",
@@ -152,7 +163,15 @@ def load_projects() -> List[Dict[str, Any]]:
         return SEED_DATA
     try:
         with open(DB_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
+            data = json.load(f)
+            for p in data:
+                if "updates" not in p:
+                    p["updates"] = []
+                if "delays" not in p:
+                    p["delays"] = []
+                if "citizenReports" not in p:
+                    p["citizenReports"] = []
+            return data
     except Exception:
         return SEED_DATA
 
