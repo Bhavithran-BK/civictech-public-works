@@ -42,14 +42,13 @@ export default function InteractiveMap({
         attributionControl: false
       }).setView(center, zoom);
 
-      // High performance CartoDB Voyager raster tiles (sleek civic style)
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      // Standard OpenStreetMap public tiles (100% free, no API key, no watermark)
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
-        subdomains: 'abcd'
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       }).addTo(map);
 
       L.control.zoom({ position: 'bottomright' }).addTo(map);
-      L.control.attribution({ position: 'bottomleft', prefix: '© OpenStreetMap contributors | GCC PostGIS' }).addTo(map);
 
       layerGroupRef.current = L.layerGroup().addTo(map);
       mapInstanceRef.current = map;
