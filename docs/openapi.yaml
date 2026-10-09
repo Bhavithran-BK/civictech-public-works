@@ -1,0 +1,628 @@
+openapi: 3.0.3
+info:
+  title: DigOnce API
+  description: API for Public Works Coordination, Conflict Detection, and Citizen Accountability
+  version: 1.0.0
+servers:
+  - url: http://localhost:8000/api/v1
+    description: Local development server
+  - url: https://digonce-api.onrender.com/api/v1
+    description: Production Render server
+paths:
+  /health:
+    get:
+      summary: Health check endpoint
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+
+  /auth/login:
+    post:
+      summary: Department Officer / Admin login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: officer.roads@cityworks.gov
+                password:
+                  type: string
+                  format: password
+                  example: CityWorks2026!
+      responses:
+        '200':
+          description: Successful authentication
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                  token_type:
+                    type: string
+                    example: bearer
+                  user:
+                    $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/ErrorResponse'
+
+  /dashboard/summary:
+    get:
+      summary: Get department / admin executive summary
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Dashboard metrics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardSummary'
+        '401':
+          $ref: '#/components/responses/ErrorResponse'
+
+  /projects:
+    get:
+      summary: List projects with filters
+      parameters:
+        - name: type
+          in: query
+          schema:
+            type: string
+        - name: department_id
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [on_track, at_risk, delayed, planned, completed, stalled]
+        - name: bbox
+          in: query
+          description: "minLng,minLat,maxLng,maxLat"
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of projects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Project'
+    post:
+      summary: Create a new project
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectCreateInput'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+
+  /projects/{id}:
+    get:
+      summary: Get project details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Project details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectDetail'
+        '404':
+          $ref: '#/components/responses/ErrorResponse'
+    patch:
+      summary: Update project
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectUpdateInput'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+
+  /projects/{id}/delays:
+    post:
+      summary: Log a delay (mandatory reason)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason, new_end_date]
+              properties:
+                reason:
+                  type: string
+                  minLength: 5
+                  example: "Subsurface utility pipeline clash requires joint inspection"
+                new_end_date:
+                  type: string
+                  format: date
+      responses:
+        '200':
+          description: Delay recorded and project status updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+
+  /projects/{id}/updates:
+    post:
+      summary: Add an official project update / progress note
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [note]
+              properties:
+                note:
+                  type: string
+      responses:
+        '200':
+          description: Update added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectUpdate'
+
+  /projects/conflict-check:
+    post:
+      summary: Check for geographic and schedule conflicts
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [start_date, end_date, coordinates]
+              properties:
+                start_date:
+                  type: string
+                  format: date
+                end_date:
+                  type: string
+                  format: date
+                buffer_meters:
+                  type: number
+                  default: 50
+                coordinates:
+                  type: array
+                  items:
+                    type: array
+                    items:
+                      type: number
+                    minItems: 2
+                    maxItems: 2
+      responses:
+        '200':
+          description: Conflict check results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConflictCheckResult'
+
+  /projects/{id}/reports:
+    post:
+      summary: Submit citizen verification report
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [kind, lat, lng]
+              properties:
+                kind:
+                  type: string
+                  enum: [progress_verified, no_activity, safety_hazard]
+                photo_url:
+                  type: string
+                lat:
+                  type: number
+                lng:
+                  type: number
+                notes:
+                  type: string
+                reporter_contact:
+                  type: string
+      responses:
+        '201':
+          description: Report recorded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Report'
+
+  /projects/{id}/subscribe:
+    post:
+      summary: Subscribe to project updates
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email:
+                  type: string
+                  format: email
+      responses:
+        '200':
+          description: Subscribed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Subscribed successfully
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  responses:
+    ErrorResponse:
+      description: Uniform error response
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [error]
+            properties:
+              error:
+                type: object
+                required: [code, message]
+                properties:
+                  code:
+                    type: string
+                    example: CONFLICT_DETECTED
+                  message:
+                    type: string
+                    example: Another project is scheduled on this road segment.
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        full_name:
+          type: string
+        role:
+          type: string
+          enum: [public, officer, admin]
+        department_id:
+          type: string
+        department_name:
+          type: string
+
+    DashboardSummary:
+      type: object
+      properties:
+        total_projects:
+          type: integer
+        status_counts:
+          type: object
+          properties:
+            on_track:
+              type: integer
+            at_risk:
+              type: integer
+            delayed:
+              type: integer
+            planned:
+              type: integer
+            completed:
+              type: integer
+            stalled:
+              type: integer
+        overdue_projects_count:
+          type: integer
+        open_reports_count:
+          type: integer
+        unresponsive_reports_72h:
+          type: integer
+        duplicate_dig_savings_est_inr:
+          type: number
+          example: 45000000
+        overdue_projects:
+          type: array
+          items:
+            $ref: '#/components/schemas/Project'
+        recent_conflicts_prevented:
+          type: integer
+
+    Project:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        purpose:
+          type: string
+        type:
+          type: string
+          enum: [road, drain, pipeline, electrical, telecom]
+        department_id:
+          type: string
+        department_name:
+          type: string
+        contractor:
+          type: string
+        budget:
+          type: number
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        original_end_date:
+          type: string
+          format: date
+        status:
+          type: string
+          enum: [on_track, at_risk, delayed, planned, completed, stalled]
+        health_score:
+          type: integer
+          minimum: 0
+          maximum: 100
+        location_name:
+          type: string
+        ward:
+          type: string
+        latest_delay_reason:
+          type: string
+          nullable: true
+        coordinates:
+          type: array
+          items:
+            type: array
+            items:
+              type: number
+
+    ProjectDetail:
+      allOf:
+        - $ref: '#/components/schemas/Project'
+        - type: object
+          properties:
+            updates:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProjectUpdate'
+            delays:
+              type: array
+              items:
+                $ref: '#/components/schemas/DelayRecord'
+            reports:
+              type: array
+              items:
+                $ref: '#/components/schemas/Report'
+
+    ProjectCreateInput:
+      type: object
+      required: [title, purpose, type, department_id, contractor, budget, start_date, end_date, location_name, coordinates]
+      properties:
+        title:
+          type: string
+        purpose:
+          type: string
+        type:
+          type: string
+          enum: [road, drain, pipeline, electrical, telecom]
+        department_id:
+          type: string
+        contractor:
+          type: string
+        budget:
+          type: number
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        location_name:
+          type: string
+        ward:
+          type: string
+        coordinates:
+          type: array
+          items:
+            type: array
+            items:
+              type: number
+
+    ProjectUpdateInput:
+      type: object
+      properties:
+        title:
+          type: string
+        purpose:
+          type: string
+        contractor:
+          type: string
+        budget:
+          type: number
+        status:
+          type: string
+          enum: [on_track, at_risk, delayed, planned, completed, stalled]
+
+    ConflictCheckResult:
+      type: object
+      properties:
+        has_conflict:
+          type: boolean
+        clash_count:
+          type: integer
+        conflicting_projects:
+          type: array
+          items:
+            type: object
+            properties:
+              project_id:
+                type: string
+              title:
+                type: string
+              department:
+                type: string
+              start_date:
+                type: string
+              end_date:
+                type: string
+              distance_meters:
+                type: number
+              conflict_type:
+                type: string
+                enum: [schedule_overlap, recently_dug]
+        suggested_joint_window:
+          type: object
+          nullable: true
+          properties:
+            start_date:
+              type: string
+            end_date:
+              type: string
+            recommendation:
+              type: string
+
+    Report:
+      type: object
+      properties:
+        id:
+          type: string
+        project_id:
+          type: string
+        kind:
+          type: string
+          enum: [progress_verified, no_activity, safety_hazard]
+        photo_url:
+          type: string
+        lat:
+          type: number
+        lng:
+          type: number
+        distance_m:
+          type: number
+        verified:
+          type: boolean
+        notes:
+          type: string
+        created_at:
+          type: string
+
+    DelayRecord:
+      type: object
+      properties:
+        id:
+          type: string
+        reason:
+          type: string
+        old_end_date:
+          type: string
+        new_end_date:
+          type: string
+        created_at:
+          type: string
+
+    ProjectUpdate:
+      type: object
+      properties:
+        id:
+          type: string
+        note:
+          type: string
+        created_at:
+          type: string

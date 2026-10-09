@@ -1,0 +1,753 @@
+{
+  "departments": [
+    {
+      "id": "dept-01",
+      "name": "Greater Chennai Corporation - Roads & Bridges",
+      "code": "GCC-ROADS",
+      "type": "Roads & Bridges",
+      "contact_email": "roads@chennaicorporation.gov.in"
+    },
+    {
+      "id": "dept-02",
+      "name": "Chennai Metro Water Supply & Sewerage Board",
+      "code": "CMWSSB",
+      "type": "Water Supply & Sewerage",
+      "contact_email": "waterworks@cmwssb.tn.gov.in"
+    },
+    {
+      "id": "dept-03",
+      "name": "TANGEDCO - Electricity Board",
+      "code": "TANGEDCO",
+      "type": "Electricity & Power",
+      "contact_email": "maintenance@tangedco.gov.in"
+    },
+    {
+      "id": "dept-04",
+      "name": "GCC - Storm Water Drain Department",
+      "code": "GCC-SWD",
+      "type": "Stormwater Drains",
+      "contact_email": "swd@chennaicorporation.gov.in"
+    },
+    {
+      "id": "dept-05",
+      "name": "Chennai Metro Rail Limited",
+      "code": "CMRL",
+      "type": "Transit & Metro",
+      "contact_email": "projects@chennaimetrorail.org"
+    }
+  ],
+  "users": [
+    {
+      "id": "usr-01",
+      "email": "officer.roads@cityworks.gov",
+      "full_name": "K. Rajesh (Executive Engineer)",
+      "department_id": "dept-01",
+      "department_name": "Greater Chennai Corporation - Roads & Bridges",
+      "role": "officer"
+    },
+    {
+      "id": "usr-02",
+      "email": "admin@cityworks.gov",
+      "full_name": "S. Meenakshi (Joint Commissioner)",
+      "department_id": "dept-01",
+      "department_name": "Greater Chennai Corporation - Roads & Bridges",
+      "role": "admin"
+    }
+  ],
+  "dashboard_summary": {
+    "total_projects": 28,
+    "status_counts": {
+      "on_track": 11,
+      "at_risk": 5,
+      "delayed": 6,
+      "planned": 3,
+      "completed": 1,
+      "stalled": 2
+    },
+    "overdue_projects_count": 6,
+    "open_reports_count": 18,
+    "unresponsive_reports_72h": 4,
+    "duplicate_dig_savings_est_inr": 48500000,
+    "recent_conflicts_prevented": 7
+  },
+  "projects": [
+    {
+      "id": "proj-101",
+      "title": "Anna Salai Arterial Bitumen Resurfacing",
+      "purpose": "Full-depth milling and asphalt resurfacing between Nandanam Signal and Saidapet Bridge to fix monsoon rutting.",
+      "type": "road",
+      "department_id": "dept-01",
+      "department_name": "Greater Chennai Corporation - Roads & Bridges",
+      "contractor": "Larsen & Toubro Infra Works",
+      "budget": 24000000,
+      "start_date": "2026-09-01",
+      "end_date": "2026-11-15",
+      "original_end_date": "2026-10-31",
+      "status": "delayed",
+      "health_score": 42,
+      "location_name": "Anna Salai (Nandanam - Saidapet)",
+      "ward": "Ward 142 (Zone 10)",
+      "latest_delay_reason": "Heavy pre-monsoon precipitation disrupted nighttime asphalt paving",
+      "coordinates": [
+        [80.2285, 13.0285],
+        [80.2241, 13.0232],
+        [80.2215, 13.0189]
+      ]
+    },
+    {
+      "id": "proj-102",
+      "title": "Anna Salai Underground Sewerage Main Pipeline Replacement",
+      "purpose": "Urgent trenching for 600mm ductile iron trunk sewer line replacement under eastern carriageway.",
+      "type": "pipeline",
+      "department_id": "dept-02",
+      "department_name": "Chennai Metro Water Supply & Sewerage Board",
+      "contractor": "VA Tech Wabag Utilities Ltd",
+      "budget": 38000000,
+      "start_date": "2026-10-25",
+      "end_date": "2026-12-20",
+      "original_end_date": "2026-12-20",
+      "status": "planned",
+      "health_score": 85,
+      "location_name": "Anna Salai (Saidapet Corridor)",
+      "ward": "Ward 142 (Zone 10)",
+      "latest_delay_reason": null,
+      "coordinates": [
+        [80.2282, 13.0281],
+        [80.2238, 13.0229],
+        [80.2211, 13.0185]
+      ]
+    },
+    {
+      "id": "proj-103",
+      "title": "Velachery 100-ft Bypass Road Storm Water Culvert Construction",
+      "purpose": "Constructing 3.5m twin-cell RCC box culvert to mitigate chronic Pallikaranai waterlogging.",
+      "type": "drain",
+      "department_id": "dept-04",
+      "department_name": "GCC - Storm Water Drain Department",
+      "contractor": "Soma Enterprise Infra",
+      "budget": 18500000,
+      "start_date": "2026-08-10",
+      "end_date": "2026-10-05",
+      "original_end_date": "2026-10-05",
+      "status": "stalled",
+      "health_score": 24,
+      "location_name": "100 Feet Bypass Road, Velachery",
+      "ward": "Ward 177 (Zone 13)",
+      "latest_delay_reason": "Contractor abandoned site post initial excavation; show cause notice issued",
+      "coordinates": [
+        [80.2173, 12.9815],
+        [80.2201, 12.9782],
+        [80.2226, 12.9754]
+      ]
+    },
+    {
+      "id": "proj-104",
+      "title": "Velachery Bypass TANGEDCO 33kV Cable Trenching",
+      "purpose": "Laying underground 33kV high tension cables to prevent overhead wire snapping in storm season.",
+      "type": "electrical",
+      "department_id": "dept-03",
+      "department_name": "TANGEDCO - Electricity Board",
+      "contractor": "Voltas Power Transmission",
+      "budget": 14200000,
+      "start_date": "2026-09-15",
+      "end_date": "2026-11-30",
+      "original_end_date": "2026-11-30",
+      "status": "at_risk",
+      "health_score": 58,
+      "location_name": "Velachery Bypass Road (Vijayanagar - Kaiveli)",
+      "ward": "Ward 177 (Zone 13)",
+      "latest_delay_reason": null,
+      "coordinates": [
+        [80.2179, 12.9818],
+        [80.2205, 12.9786],
+        [80.2231, 12.9758]
+      ]
+    },
+    {
+      "id": "proj-105",
+      "title": "Pondy Bazaar Pedestrian Plaza Tile Replacement & Ducting",
+      "purpose": "Replacing damaged pavers, granite bollards, and inspecting sub-surface utility chambers.",
+      "type": "road",
+      "department_id": "dept-01",
+      "department_name": "Greater Chennai Corporation - Roads & Bridges",
+      "contractor": "KCP Engineers Pvt Ltd",
+      "budget": 7500000,
+      "start_date": "2026-07-01",
+      "end_date": "2026-08-30",
+      "original_end_date": "2026-08-15",
+      "status": "completed",
+      "health_score": 96,
+      "location_name": "Sir Theagaraya Road, T. Nagar",
+      "ward": "Ward 136 (Zone 10)",
+      "latest_delay_reason": "Festival season crowd restrictions prevented heavy machinery access",
+      "coordinates": [
+        [80.2335, 13.0412],
+        [80.2369, 13.0401],
+        [80.2405, 13.0392]
+      ]
+    },
+    {
+      "id": "proj-106",
+      "title": "Pondy Bazaar Fresh Water Distribution Ring",
+      "purpose": "New booster feeder line connection across Sir Theagaraya Road junction.",
+      "type": "pipeline",
+      "department_id": "dept-02",
+      "department_name": "Chennai Metro Water Supply & Sewerage Board",
+      "contractor": "Sriram Water EPC Ltd",
+      "budget": 9200000,
+      "start_date": "2026-09-10",
+      "end_date": "2026-10-30",
+      "original_end_date": "2026-10-30",
+      "status": "on_track",
+      "health_score": 88,
+      "location_name": "Sir Theagaraya Road / Panagal Park",
+      "ward": "Ward 136 (Zone 10)",
+      "latest_delay_reason": null,
+      "coordinates": [
+        [80.2331, 13.0414],
+        [80.2365, 13.0403]
+      ]
+    },
+    {
+      "id": "proj-107",
+      "title": "Rajiv Gandhi Salai (OMR) Service Lane Drain Reconstruction",
+      "purpose": "Constructing closed storm drain channel along IT corridor service lane from Perungudi to Thoraipakkam.",
+      "type": "drain",
+      "department_id": "dept-04",
+      "department_name": "GCC - Storm Water Drain Department",
+      "contractor": "URC Construction Pvt Ltd",
+      "budget": 31000000,
+      "start_date": "2026-05-10",
+      "end_date": "2026-09-25",
+      "original_end_date": "2026-08-15",
+      "status": "delayed",
+      "health_score": 38,
+      "location_name": "OMR Service Road (Perungudi Toll - Thoraipakkam)",
+      "ward": "Ward 184 (Zone 14)",
+      "latest_delay_reason": "Utility pole relocation by TANGEDCO delayed by 40 days",
+      "coordinates": [
+        [80.2468, 12.9661],
+        [80.2435, 12.9515],
+        [80.2398, 12.9372]
+      ]
+    },
+    {
+      "id": "proj-108",
+      "title": "OMR Elevated Corridor Phase 2 Metro Piling",
+      "purpose": "Pier foundation drilling and utility diversion for Metro Line 3.",
+      "type": "road",
+      "department_id": "dept-05",
+      "department_name": "Chennai Metro Rail Limited",
+      "contractor": "NCC Limited",
+      "budget": 125000000,
+      "start_date": "2026-06-01",
+      "end_date": "2027-05-30",
+      "original_end_date": "2027-05-30",
+      "status": "on_track",
+      "health_score": 82,
+      "location_name": "Rajiv Gandhi Salai Median, Thoraipakkam",
+      "ward": "Ward 184 (Zone 14)",
+      "latest_delay_reason": null,
+      "coordinates": [
+        [80.2465, 12.9663],
+        [80.2432, 12.9518],
+        [80.2395, 12.9375]
+      ]
+    },
+    {
+      "id": "proj-109",
+      "title": "Dr. Radhakrishnan Salai Stormwater Interceptor",
+      "purpose": "Direct runoff diversion into Buckingham Canal to prevent inundation near CSI Kalyani Hospital.",
+      "type": "drain",
+      "department_id": "dept-04",
+      "department_name": "GCC - Storm Water Drain Department",
+      "contractor": "GVK Project Works",
+      "budget": 16000000,
+      "start_date": "2026-08-01",
+      "end_date": "2026-10-15",
+      "original_end_date": "2026-10-15",
+      "status": "on_track",
+      "health_score": 91,
+      "location_name": "Dr. Radhakrishnan Salai, Mylapore",
+      "ward": "Ward 122 (Zone 9)",
+      "latest_delay_reason": null,
+      "coordinates": [
+        [80.2678, 13.0441],
+        [80.2605, 13.0448],
+        [80.2525, 13.0456]
+      ]
+    },
+    {
+      "id": "proj-110",
+      "title": "Mylapore Tank Loop Road Pavement Renewal",
+      "purpose": "Cobblestone and dense bituminous macadam renewal for temple car festival route.",
+      "type": "road",
+      "department_id": "dept-01",
+      "department_name": "Greater Chennai Corporation - Roads & Bridges",
+      "contractor": "Consolidated Construction Consortium",
+      "budget": 8800000,
+      "start_date": "2026-09-20",
+      "end_date": "2026-11-20",
+      "original_end_date": "2026-11-20",
+      "status": "on_track",
+      "health_score": 94,
+      "location_name": "North & East Mada Street, Mylapore",
+      "ward": "Ward 124 (Zone 9)",
+      "latest_delay_reason": null,
+      "coordinates": [
+        [80.2701, 13.0335],
+        [80.2722, 13.0332],
+        [80.2718, 13.0315]
+      ]
+    },
+    {
+      "id": "proj-111",
+      "title": "Poonamallee High Road Water Line Interconnection",
+      "purpose": "Installation of 900mm valves and crossing under PH road near Kilpauk Medical College.",
+      "type": "pipeline",
+      "department_id": "dept-02",
+      "department_name": "Chennai Metro Water Supply & Sewerage Board",
+      "contractor": "Megha Engineering & Infrastructure Ltd",
+      "budget": 21000000,
+      "start_date": "2026-07-15",
+      "end_date": "2026-09-30",
+      "original_end_date": "2026-09-15",
+      "status": "delayed",
+      "health_score": 45,
+      "location_name": "Poonamallee High Road, Kilpauk",
+      "ward": "Ward 104 (Zone 8)",
+      "latest_delay_reason": "Traffic police night-time permit delayed due to VIP route diversion",
+      "coordinates": [
+        [80.2452, 13.0789],
+        [80.2401, 13.0785],
+        [80.2345, 13.0778]
+      ]
+    },
+    {
+      "id": "proj-112",
+      "title": "Kilpauk Garden Road Micro-Trenching for Optical Fiber",
+      "purpose": "Public smart-city CCTV surveillance and Wi-Fi backbone trenching.",
+      "type": "telecom",
+      "department_id": "dept-01",
+      "department_name": "Greater Chennai Corporation - Roads & Bridges",
+      "contractor": "Sterlite Technologies",
+      "budget": 4900000,
+      "start_date": "2026-10-01",
+      "end_date": "2026-11-10",
+      "original_end_date": "2026-11-10",
+      "status": "on_track",
+      "health_score": 87,
+      "location_name": "Kilpauk Garden Road",
+      "ward": "Ward 102 (Zone 8)",
+      "latest_delay_reason": null,
+      "coordinates": [
+        [80.2389, 13.0851],
+        [80.2442, 13.0845]
+      ]
+    },
+    {
+      "id": "proj-113",
+      "title": "Kathipara Junction Flyover Expansion Joint Servicing",
+      "purpose": "Hydro-demolition of worn mastic asphalt and replacement of modular expansion joints.",
+      "type": "road",
+      "department_id": "dept-01",
+      "department_name": "Greater Chennai Corporation - Roads & Bridges",
+      "contractor": "Freyssinet Menard India",
+      "budget": 11500000,
+      "start_date": "2026-08-15",
+      "end_date": "2026-10-30",
+      "original_end_date": "2026-10-30",
+      "status": "on_track",
+      "health_score": 90,
+      "location_name": "Kathipara Cloverleaf, Guindy",
+      "ward": "Ward 160 (Zone 12)",
+      "latest_delay_reason": null,
+      "coordinates": [
+        [80.2052, 13.0075],
+        [80.2045, 13.0062],
+        [80.2038, 13.0051]
+      ]
+    },
+    {
+      "id": "proj-114",
+      "title": "GST Road Rainwater Drain Widening (Guindy to Airport)",
+      "purpose": "Enlarging masonry box drains to avoid runway perimeter backflow during cyclonic rains.",
+      "type": "drain",
+      "department_id": "dept-04",
+      "department_name": "GCC - Storm Water Drain Department",
+      "contractor": "Navayuga Engineering Co",
+      "budget": 29000000,
+      "start_date": "2026-06-15",
+      "end_date": "2026-10-20",
+      "original_end_date": "2026-09-30",
+      "status": "at_risk",
+      "health_score": 62,
+      "location_name": "GST Road (Alandur - Meenambakkam)",
+      "ward": "Ward 163 (Zone 12)",
+      "latest_delay_reason": "High water table required round-the-clock dewatering pumps",
+      "coordinates": [
+        [80.1985, 12.9975],
+        [80.1852, 12.9862],
+        [80.1745, 12.9785]
+      ]
+    },
+    {
+      "id": "proj-115",
+      "title": "Alwarpet TTK Road Gas Pipeline Retrofitting",
+      "purpose": "City Gas Distribution (CGD) underground medium pressure steel pipeline deployment.",
+      "type": "pipeline",
+      "department_id": "dept-02",
+      "department_name": "Chennai Metro Water Supply & Sewerage Board",
+      "contractor": "Torrent Gas Projects Ltd",
+      "budget": 13500000,
+      "start_date": "2026-09-05",
+      "end_date": "2026-11-05",
+      "original_end_date": "2026-11-05",
+      "status": "on_track",
+      "health_score": 83,
+      "location_name": "TTK Road, Alwarpet",
+      "ward": "Ward 123 (Zone 9)",
+      "latest_delay_reason": null,
+      "coordinates": [
+        [80.2505, 13.0365],
+        [80.2522, 13.0312]
+      ]
+    },
+    {
+      "id": "proj-116",
+      "title": "Sardar Patel Road Footpath Widening and Tree Basin Protection",
+      "purpose": "Urban streetscape revamp outside IIT Madras and Anna University.",
+      "type": "road",
+      "department_id": "dept-01",
+      "department_name": "Greater Chennai Corporation - Roads & Bridges",
+      "contractor": "KCP Engineers Pvt Ltd",
+      "budget": 6400000,
+      "start_date": "2026-09-18",
+      "end_date": "2026-11-18",
+      "original_end_date": "2026-11-18",
+      "status": "on_track",
+      "health_score": 92,
+      "location_name": "Sardar Patel Road, Guindy",
+      "ward": "Ward 173 (Zone 13)",
+      "latest_delay_reason": null,
+      "coordinates": [
+        [80.2355, 13.0078],
+        [80.2285, 13.0092],
+        [80.2212, 13.0105]
+      ]
+    },
+    {
+      "id": "proj-117",
+      "title": "Thiruvanmiyur Beach Road Storm Drainage Culvert",
+      "purpose": "Outlet conduit to prevent stagnant seawater pool buildup near Valmiki Temple.",
+      "type": "drain",
+      "department_id": "dept-04",
+      "department_name": "GCC - Storm Water Drain Department",
+      "contractor": "Oceanic Civil Builders",
+      "budget": 12800000,
+      "start_date": "2026-07-20",
+      "end_date": "2026-09-15",
+      "original_end_date": "2026-08-30",
+      "status": "stalled",
+      "health_score": 19,
+      "location_name": "East Coast Road / Beach Road, Thiruvanmiyur",
+      "ward": "Ward 180 (Zone 13)",
+      "latest_delay_reason": "Coastal Regulation Zone (CRZ) clearance dispute halted excavation",
+      "coordinates": [
+        [80.2625, 12.9845],
+        [80.2642, 12.9812],
+        [80.2655, 12.9778]
+      ]
+    },
+    {
+      "id": "proj-118",
+      "title": "Besant Nagar 2nd Avenue Underground Cable Conversion",
+      "purpose": "Replacing cyclone-vulnerable overhead distribution transformers with compact RMUs.",
+      "type": "electrical",
+      "department_id": "dept-03",
+      "department_name": "TANGEDCO - Electricity Board",
+      "contractor": "Schneider Infrastructure India",
+      "budget": 17200000,
+      "start_date": "2026-08-25",
+      "end_date": "2026-11-10",
+      "original_end_date": "2026-10-25",
+      "status": "delayed",
+      "health_score": 48,
+      "location_name": "2nd Avenue, Besant Nagar",
+      "ward": "Ward 176 (Zone 13)",
+      "latest_delay_reason": "Delayed shipment of imported compact ring main units (RMUs)",
+      "coordinates": [
+        [80.2662, 13.0012],
+        [80.2685, 12.9985]
+      ]
+    },
+    {
+      "id": "proj-119",
+      "title": "Perambur Barracks Road Sewage Pumping Station Feeder Line",
+      "purpose": "Connecting industrial effluent diversion conduit to Otteri Nullah treatment plant.",
+      "type": "pipeline",
+      "department_id": "dept-02",
+      "department_name": "Chennai Metro Water Supply & Sewerage Board",
+      "contractor": "Tata Projects Ltd",
+      "budget": 27500000,
+      "start_date": "2026-08-12",
+      "end_date": "2026-11-01",
+      "original_end_date": "2026-11-01",
+      "status": "at_risk",
+      "health_score": 64,
+      "location_name": "Perambur Barracks Road, Purasawalkam",
+      "ward": "Ward 73 (Zone 5)",
+      "latest_delay_reason": null,
+      "coordinates": [
+        [80.2582, 13.0935],
+        [80.2525, 13.0955]
+      ]
+    },
+    {
+      "id": "proj-120",
+      "title": "Madhavaram High Road Comprehensive Road Widening",
+      "purpose": "Widening carriageway from 2-lane to 4-lane with utility service ducting.",
+      "type": "road",
+      "department_id": "dept-01",
+      "department_name": "Greater Chennai Corporation - Roads & Bridges",
+      "contractor": "Sadbhav Engineering",
+      "budget": 42000000,
+      "start_date": "2026-07-01",
+      "end_date": "2026-12-15",
+      "original_end_date": "2026-12-15",
+      "status": "on_track",
+      "health_score": 85,
+      "location_name": "Madhavaram High Road (Moolakadai Junction)",
+      "ward": "Ward 32 (Zone 3)",
+      "latest_delay_reason": null,
+      "coordinates": [
+        [80.2312, 13.1385],
+        [80.2355, 13.1442]
+      ]
+    },
+    {
+      "id": "proj-121",
+      "title": "Koyambedu Wholesale Market Drainage Overhaul",
+      "purpose": "Concrete gutter desilting and heavy duty grating replacement in vegetable market.",
+      "type": "drain",
+      "department_id": "dept-04",
+      "department_name": "GCC - Storm Water Drain Department",
+      "contractor": "Sri City Civil Constr.",
+      "budget": 8300000,
+      "start_date": "2026-09-22",
+      "end_date": "2026-11-22",
+      "original_end_date": "2026-11-22",
+      "status": "on_track",
+      "health_score": 93,
+      "location_name": "Koyambedu Market Complex",
+      "ward": "Ward 127 (Zone 10)",
+      "latest_delay_reason": null,
+      "coordinates": [
+        [80.1912, 13.0695],
+        [80.1945, 13.0722]
+      ]
+    },
+    {
+      "id": "proj-122",
+      "title": "Arcot Road (Vadapalani - Porur) Road Restoration post-Metro",
+      "purpose": "Post-viaduct construction permanent bituminous surface layer reinstatement.",
+      "type": "road",
+      "department_id": "dept-01",
+      "department_name": "Greater Chennai Corporation - Roads & Bridges",
+      "contractor": "Larsen & Toubro Ltd",
+      "budget": 36000000,
+      "start_date": "2026-08-01",
+      "end_date": "2026-10-31",
+      "original_end_date": "2026-09-30",
+      "status": "delayed",
+      "health_score": 46,
+      "location_name": "Arcot Road, Valasaravakkam",
+      "ward": "Ward 150 (Zone 11)",
+      "latest_delay_reason": "Metro underground cross-passage utility verification delayed road handover",
+      "coordinates": [
+        [80.1875, 13.0485],
+        [80.1742, 13.0425],
+        [80.1612, 13.0382]
+      ]
+    },
+    {
+      "id": "proj-123",
+      "title": "Porur Roundabout 66kV Substation Feeder Trenching",
+      "purpose": "Deep horizontal directional drilling for power grid grid tie-in.",
+      "type": "electrical",
+      "department_id": "dept-03",
+      "department_name": "TANGEDCO - Electricity Board",
+      "contractor": "L&T Transmission Lines",
+      "budget": 19400000,
+      "start_date": "2026-10-05",
+      "end_date": "2026-11-25",
+      "original_end_date": "2026-11-25",
+      "status": "planned",
+      "health_score": 88,
+      "location_name": "Mount-Poonamallee Road, Porur",
+      "ward": "Ward 152 (Zone 11)",
+      "latest_delay_reason": null,
+      "coordinates": [
+        [80.1585, 13.0365],
+        [80.1525, 13.0315]
+      ]
+    },
+    {
+      "id": "proj-124",
+      "title": "Ennore Expressway Heavy Haul Road Strengthening",
+      "purpose": "Dense bitumen concrete for port container traffic with reinforced sub-base.",
+      "type": "road",
+      "department_id": "dept-01",
+      "department_name": "Greater Chennai Corporation - Roads & Bridges",
+      "contractor": "GMR Highways",
+      "budget": 52000000,
+      "start_date": "2026-05-15",
+      "end_date": "2026-11-15",
+      "original_end_date": "2026-11-15",
+      "status": "on_track",
+      "health_score": 89,
+      "location_name": "Ennore Expressway, Tondiarpet",
+      "ward": "Ward 38 (Zone 4)",
+      "latest_delay_reason": null,
+      "coordinates": [
+        [80.2985, 13.1485],
+        [80.3025, 13.1612]
+      ]
+    },
+    {
+      "id": "proj-125",
+      "title": "Adyar Gandhi Nagar 4th Main Water Pipeline Rehabilitation",
+      "purpose": "Internal epoxy sleeve relining of corroded 40-year old cast iron water supply mains.",
+      "type": "pipeline",
+      "department_id": "dept-02",
+      "department_name": "Chennai Metro Water Supply & Sewerage Board",
+      "contractor": "Hydrotech Pipe Solutions",
+      "budget": 11200000,
+      "start_date": "2026-09-12",
+      "end_date": "2026-11-05",
+      "original_end_date": "2026-10-20",
+      "status": "at_risk",
+      "health_score": 67,
+      "location_name": "Gandhi Nagar 4th Main, Adyar",
+      "ward": "Ward 173 (Zone 13)",
+      "latest_delay_reason": "Emergency leak repair required extending curing time for epoxy sleeve",
+      "coordinates": [
+        [80.2542, 13.0112],
+        [80.2585, 13.0125]
+      ]
+    },
+    {
+      "id": "proj-126",
+      "title": "East Coast Road (Kottivakkam to Palavakkam) Footpath & Cycle Track",
+      "purpose": "Non-motorized transit infrastructure along seaside arterial road.",
+      "type": "road",
+      "department_id": "dept-01",
+      "department_name": "Greater Chennai Corporation - Roads & Bridges",
+      "contractor": "Appaswamy Urban Infra",
+      "budget": 15800000,
+      "start_date": "2026-08-10",
+      "end_date": "2026-11-30",
+      "original_end_date": "2026-11-30",
+      "status": "on_track",
+      "health_score": 90,
+      "location_name": "ECR Kottivakkam Corridor",
+      "ward": "Ward 181 (Zone 14)",
+      "latest_delay_reason": null,
+      "coordinates": [
+        [80.2632, 12.9685],
+        [80.2615, 12.9542]
+      ]
+    },
+    {
+      "id": "proj-127",
+      "title": "Triplicane High Road Heritage Precinct Drainage Remodeling",
+      "purpose": "Upgrading stormwater channels around Parthasarathy temple without disturbing stone masonry.",
+      "type": "drain",
+      "department_id": "dept-04",
+      "department_name": "GCC - Storm Water Drain Department",
+      "contractor": "Heritage Conservation Works",
+      "budget": 9500000,
+      "start_date": "2026-07-25",
+      "end_date": "2026-10-25",
+      "original_end_date": "2026-09-30",
+      "status": "delayed",
+      "health_score": 49,
+      "location_name": "Triplicane High Road, Triplicane",
+      "ward": "Ward 116 (Zone 9)",
+      "latest_delay_reason": "Archeological inspection mandated manual excavation in temple precincts",
+      "coordinates": [
+        [80.2742, 13.0545],
+        [80.2785, 13.0512]
+      ]
+    },
+    {
+      "id": "proj-128",
+      "title": "Ambattur Industrial Estate Trunk Sewer Main Replacement",
+      "purpose": "High capacity reinforced glass-fiber concrete piping to withstand industrial runoff.",
+      "type": "pipeline",
+      "department_id": "dept-02",
+      "department_name": "Chennai Metro Water Supply & Sewerage Board",
+      "contractor": "Simplex Infrastructures",
+      "budget": 33000000,
+      "start_date": "2026-08-01",
+      "end_date": "2026-12-10",
+      "original_end_date": "2026-12-10",
+      "status": "on_track",
+      "health_score": 86,
+      "location_name": "Ambattur Industrial Estate 3rd Main Road",
+      "ward": "Ward 85 (Zone 7)",
+      "latest_delay_reason": null,
+      "coordinates": [
+        [80.1612, 13.0985],
+        [80.1705, 13.1042]
+      ]
+    }
+  ],
+  "conflicts": [
+    {
+      "id": "c-01",
+      "project_a_id": "proj-101",
+      "project_b_id": "proj-102",
+      "road_name": "Anna Salai (Nandanam - Saidapet)",
+      "distance_meters": 12.5,
+      "overlap_type": "schedule_overlap",
+      "description": "GCC Road Resurfacing ends 2026-11-15, but CMWSSB Sewerage Pipeline Trenching starts 2026-10-25 on the exact same road segment! New road will be dug up immediately after paving.",
+      "estimated_redundant_cost_inr": 18000000,
+      "suggested_joint_window": {
+        "start_date": "2026-10-25",
+        "end_date": "2026-12-30",
+        "recommendation": "Coordinate trenching first (CMWSSB) from Oct 25 to Dec 10, followed immediately by final resurfacing (GCC) Dec 11-30. Prevents double-digging and saves ₹1.8 Crore."
+      }
+    },
+    {
+      "id": "c-02",
+      "project_a_id": "proj-103",
+      "project_b_id": "proj-104",
+      "road_name": "100 Feet Bypass Road, Velachery",
+      "distance_meters": 18.0,
+      "overlap_type": "schedule_overlap",
+      "description": "GCC Box Culvert construction overlaps directly with TANGEDCO 33kV high tension underground power line trenching.",
+      "estimated_redundant_cost_inr": 14200000,
+      "suggested_joint_window": {
+        "start_date": "2026-09-15",
+        "end_date": "2026-11-30",
+        "recommendation": "Integrate power duct directly inside culvert retaining embankment to eliminate separate trenching."
+      }
+    },
+    {
+      "id": "c-03",
+      "project_a_id": "proj-105",
+      "project_b_id": "proj-106",
+      "road_name": "Sir Theagaraya Road, T. Nagar",
+      "distance_meters": 8.0,
+      "overlap_type": "recently_dug",
+      "description": "GCC Pedestrian Plaza completed Aug 2026, but CMWSSB water ring commenced Sep 2026 within 15 days of newly laid pavers.",
+      "estimated_redundant_cost_inr": 7500000,
+      "suggested_joint_window": {
+        "start_date": "2026-07-01",
+        "end_date": "2026-09-15",
+        "recommendation": "Joint utility trenching was advised prior to paver installation."
+      }
+    }
+  ]
+}

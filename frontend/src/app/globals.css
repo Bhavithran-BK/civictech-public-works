@@ -1,0 +1,64 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --primary: #0f2744;
+    --primary-foreground: #ffffff;
+    --accent: #2563eb;
+    
+    /* Fixed status colours strictly specified in 06-frontend-and-ui-rules.md */
+    --status-on-track: #16a34a; /* Green */
+    --status-at-risk: #d97706;  /* Yellow */
+    --status-delayed: #dc2626;  /* Red */
+    --status-planned: #64748b;  /* Grey/white */
+    --status-completed: #2563eb;/* Blue */
+    --status-stalled: #991b1b;  /* Stalled */
+  }
+
+  body {
+    background-color: #f8fafc;
+    color: #0f172a;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Status Badges */
+.badge-on-track {
+  background-color: #f0fdf4;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+.badge-at-risk {
+  background-color: #fffbeb;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+
+.badge-delayed {
+  background-color: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.badge-planned {
+  background-color: #f8fafc;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+
+.badge-completed {
+  background-color: #eff6ff;
+  color: #1e40af;
+  border: 1px solid #bfdbfe;
+}
+
+.badge-stalled {
+  background-color: #450a0a;
+  color: #fef2f2;
+  border: 1px solid #7f1d1d;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
