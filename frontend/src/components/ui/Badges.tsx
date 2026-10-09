@@ -2,8 +2,8 @@ import React from 'react';
 import { ProjectStatus, WorkType } from '@/lib/types';
 import { 
   CheckCircle2, 
-  AlertTriangle, 
   Clock, 
+  AlertTriangle, 
   AlertOctagon, 
   CalendarClock, 
   CheckCheck,
@@ -22,52 +22,58 @@ interface StatusBadgeProps {
 export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, size = 'md' }) => {
   const configs: Record<
     ProjectStatus,
-    { label: string; bg: string; border: string; icon: React.ReactNode }
+    { label: string; bg: string; text: string; border: string; icon: React.ReactNode }
   > = {
     on_track: {
-      label: 'On Track',
-      bg: 'bg-emerald-50 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300',
-      border: 'border-emerald-300 dark:border-emerald-800',
-      icon: <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+      label: 'ON TRACK',
+      bg: 'bg-emerald-50 text-emerald-800',
+      border: 'border-emerald-300',
+      text: 'text-emerald-800',
+      icon: <CheckCircle2 className="w-3 h-3 text-emerald-700" />
     },
     at_risk: {
-      label: 'At Risk',
-      bg: 'bg-amber-50 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300',
-      border: 'border-amber-300 dark:border-amber-800',
-      icon: <Clock className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+      label: 'AT RISK',
+      bg: 'bg-amber-50 text-amber-900',
+      border: 'border-amber-300',
+      text: 'text-amber-900',
+      icon: <Clock className="w-3 h-3 text-amber-700" />
     },
     delayed: {
-      label: 'Delayed',
-      bg: 'bg-rose-50 text-rose-800 dark:bg-rose-950/40 dark:text-rose-300',
-      border: 'border-rose-300 dark:border-rose-800',
-      icon: <AlertTriangle className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />
+      label: 'DELAYED',
+      bg: 'bg-rose-50 text-rose-900',
+      border: 'border-rose-300',
+      text: 'text-rose-900',
+      icon: <AlertTriangle className="w-3 h-3 text-rose-700" />
     },
     stalled: {
-      label: 'Stalled',
-      bg: 'bg-purple-50 text-purple-800 dark:bg-purple-950/40 dark:text-purple-300',
-      border: 'border-purple-300 dark:border-purple-800',
-      icon: <AlertOctagon className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+      label: 'STALLED',
+      bg: 'bg-purple-50 text-purple-900',
+      border: 'border-purple-300',
+      text: 'text-purple-900',
+      icon: <AlertOctagon className="w-3 h-3 text-purple-700" />
     },
     planned: {
-      label: 'Planned',
-      bg: 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300',
-      border: 'border-slate-300 dark:border-slate-700',
-      icon: <CalendarClock className="w-3.5 h-3.5 text-slate-600 dark:text-slate-400" />
+      label: 'PLANNED',
+      bg: 'bg-slate-100 text-slate-800',
+      border: 'border-slate-300',
+      text: 'text-slate-800',
+      icon: <CalendarClock className="w-3 h-3 text-slate-700" />
     },
     completed: {
-      label: 'Completed',
-      bg: 'bg-blue-50 text-blue-800 dark:bg-blue-950/40 dark:text-blue-300',
-      border: 'border-blue-300 dark:border-blue-800',
-      icon: <CheckCheck className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+      label: 'COMPLETED',
+      bg: 'bg-blue-50 text-blue-900',
+      border: 'border-blue-300',
+      text: 'text-blue-900',
+      icon: <CheckCheck className="w-3 h-3 text-blue-700" />
     }
   };
 
   const c = configs[status] || configs.planned;
-  const padding = size === 'sm' ? 'px-2 py-0.5 text-xs' : size === 'lg' ? 'px-3.5 py-1.5 text-sm font-semibold' : 'px-2.5 py-1 text-xs font-medium';
+  const padding = size === 'sm' ? 'px-2 py-0.5 text-[10px]' : size === 'lg' ? 'px-2.5 py-1 text-xs' : 'px-2 py-0.5 text-xs';
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full border shadow-xs tracking-tight ${c.bg} ${c.border} ${padding}`}
+      className={`inline-flex items-center gap-1 rounded font-bold uppercase tracking-wider border ${c.bg} ${c.border} ${c.text} ${padding}`}
     >
       {c.icon}
       <span>{c.label}</span>
@@ -75,7 +81,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, size = 'md' })
   );
 };
 
-export const WorkTypeIcon: React.FC<{ type: WorkType; className?: string }> = ({ type, className = 'w-4 h-4' }) => {
+export const WorkTypeIcon: React.FC<{ type: WorkType; className?: string }> = ({ type, className = 'w-3.5 h-3.5' }) => {
   switch (type) {
     case 'road':
       return <Shovel className={className} />;
@@ -94,24 +100,24 @@ export const WorkTypeIcon: React.FC<{ type: WorkType; className?: string }> = ({
 };
 
 export const HealthScoreMeter: React.FC<{ score: number; showText?: boolean }> = ({ score, showText = true }) => {
-  let color = 'bg-emerald-500';
-  let label = 'Healthy';
+  let barColor = 'bg-emerald-600';
+  let label = 'Normal';
   if (score < 40) {
-    color = 'bg-rose-500';
-    label = 'Critical';
+    barColor = 'bg-rose-600';
+    label = 'Critical Delay';
   } else if (score < 70) {
-    color = 'bg-amber-500';
-    label = 'Sub-optimal';
+    barColor = 'bg-amber-600';
+    label = 'Slipping';
   }
 
   return (
     <div className="flex items-center gap-2">
-      <div className="w-16 h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
-        <div className={`h-full ${color} transition-all duration-500`} style={{ width: `${score}%` }} />
+      <div className="w-16 h-1.5 bg-slate-200 rounded-xs overflow-hidden">
+        <div className={`h-full ${barColor}`} style={{ width: `${score}%` }} />
       </div>
       {showText && (
-        <span className="text-xs font-semibold tabular-nums text-slate-700 dark:text-slate-300">
-          {score}% <span className="text-[10px] text-slate-400 font-normal">({label})</span>
+        <span className="text-xs font-semibold tabular-nums text-slate-700">
+          {score}% <span className="text-[10px] text-slate-500 font-normal">({label})</span>
         </span>
       )}
     </div>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Project } from '@/lib/types';
 import { StatusBadge, HealthScoreMeter, WorkTypeIcon } from '../ui/Badges';
-import { Calendar, User, MapPin, AlertTriangle, ArrowRight } from 'lucide-react';
+import { Calendar, AlertTriangle, ArrowRight, Building, FileSpreadsheet } from 'lucide-react';
 import Link from 'next/link';
 
 interface ProjectCardProps {
@@ -20,82 +20,99 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
   return (
     <div
       onClick={onSelect}
-      className={`group relative p-4 rounded-xl border transition-all duration-200 cursor-pointer bg-white dark:bg-slate-900 ${
+      className={`relative p-3.5 rounded border transition-colors cursor-pointer bg-white ${
         isSelected
-          ? 'border-blue-600 ring-2 ring-blue-500/20 shadow-md'
-          : 'border-slate-200/90 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 shadow-xs'
+          ? 'border-blue-700 ring-1 ring-blue-700 shadow-xs'
+          : 'border-slate-200 hover:border-slate-400'
       }`}
     >
-      {/* Header: Ref Code & Status Badge */}
-      <div className="flex items-start justify-between gap-2 mb-2">
-        <div className="flex items-center gap-1.5 flex-wrap">
-          <span className="font-mono text-[11px] font-semibold tracking-wider text-slate-500 uppercase bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">
+      {/* Header: Project Reference ID & Status */}
+      <div className="flex items-center justify-between gap-2 mb-1.5">
+        <div className="flex items-center gap-1.5">
+          <span className="font-mono text-[11px] font-bold text-slate-700 bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded-xs">
             {project.referenceCode}
           </span>
-          <span className="text-xs text-slate-400 font-medium">· Ward {project.wardNumber}</span>
+          <span className="text-xs text-slate-500 font-medium">Ward {project.wardNumber} ({project.wardName})</span>
         </div>
         <StatusBadge status={project.status} size="sm" />
       </div>
 
-      {/* Project Title */}
-      <h3 className="font-semibold text-slate-900 dark:text-slate-100 text-sm leading-snug mb-1.5 group-hover:text-blue-600 transition-colors">
+      {/* Title */}
+      <h3 className="font-bold text-slate-900 text-sm leading-snug mb-1">
         {project.title}
       </h3>
 
-      {/* Department & Street info */}
-      <div className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-400 mb-2.5">
-        <WorkTypeIcon type={project.type} className="w-3.5 h-3.5 text-slate-400" />
-        <span className="font-medium text-slate-700 dark:text-slate-300">{project.departmentName}</span>
-        <span>•</span>
-        <span className="truncate">{project.roadName}</span>
+      {/* Municipal Agency & Corridor */}
+      <div className="text-xs text-slate-600 space-y-0.5 mb-2.5">
+        <div className="flex items-center gap-1">
+          <Building className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+          <span className="font-semibold text-slate-800">{project.departmentName}</span>
+        </div>
+        <div className="flex items-center gap-1 text-slate-500 pl-4">
+          <span className="truncate">{project.roadName}</span>
+        </div>
       </div>
 
-      {/* Health Score & Delay Alert */}
-      <div className="flex items-center justify-between border-t border-slate-100 dark:border-slate-800/80 pt-2.5 mt-2">
+      {/* Mandatory 5 Fields Table */}
+      <div className="grid grid-cols-2 gap-2 text-xs py-2 border-y border-slate-100 bg-slate-50/60 px-2 rounded-xs">
         <div>
-          <span className="text-[10px] uppercase tracking-wider text-slate-400 block mb-0.5">Project Health</span>
-          <HealthScoreMeter score={project.healthScore} />
+          <span className="text-[10px] uppercase font-bold text-slate-400 block">Contractor</span>
+          <span className="text-slate-800 font-medium truncate block">{project.contractor}</span>
         </div>
-
-        <div className="text-right">
-          <span className="text-[10px] uppercase tracking-wider text-slate-400 block mb-0.5">Target Completion</span>
-          <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1 justify-end">
+        <div>
+          <span className="text-[10px] uppercase font-bold text-slate-400 block">Target Completion</span>
+          <span className="text-slate-800 font-semibold flex items-center gap-1">
             <Calendar className="w-3 h-3 text-slate-400" />
             {project.plannedEndDate}
           </span>
         </div>
       </div>
 
-      {/* Conflict / Delay Banner if applicable */}
+      {/* Delay / Reason if delayed */}
+      {project.delays.length > 0 && (
+        <div className="mt-2 text-[11px] bg-rose-50 border border-rose-200 p-2 rounded-xs text-rose-900">
+          <span className="font-bold">Delay Reason: </span>
+          <span>{project.delays[0].reason}</span>
+        </div>
+      )}
+
+      {/* Conflict Notice if any */}
       {project.conflicts && project.conflicts.length > 0 && (
-        <div className="mt-3 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 rounded-lg p-2 text-xs text-rose-800 dark:text-rose-300 flex items-start gap-1.5">
-          <AlertTriangle className="w-3.5 h-3.5 text-rose-600 shrink-0 mt-0.5" />
-          <div className="leading-tight">
-            <span className="font-semibold">Dig-Once Clash Detected:</span> Coincides with {project.conflicts[0].departmentName}.
+        <div className="mt-2 text-[11px] bg-amber-50 border border-amber-300 p-2 rounded-xs text-amber-950 flex items-start gap-1.5">
+          <AlertTriangle className="w-3.5 h-3.5 text-amber-700 shrink-0 mt-0.5" />
+          <div>
+            <span className="font-bold">Dig-Once Clash: </span>
+            <span>Overlaps with {project.conflicts[0].departmentName}. Joint trenching advised.</span>
           </div>
         </div>
       )}
 
-      {/* Card Actions */}
-      <div className="mt-3 pt-2 flex items-center justify-between gap-2 border-t border-slate-100 dark:border-slate-800/60">
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            if (onOpenReportModal) onOpenReportModal(project);
-          }}
-          className="text-xs font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:underline px-1 py-0.5"
-        >
-          Verify / Check-in
-        </button>
+      {/* Health Score & Direct Links */}
+      <div className="mt-3 pt-2 flex items-center justify-between border-t border-slate-100">
+        <div>
+          <span className="text-[10px] font-bold uppercase text-slate-400 block">Health Index</span>
+          <HealthScoreMeter score={project.healthScore} />
+        </div>
 
-        <Link
-          href={`/projects/${project.id}`}
-          onClick={(e) => e.stopPropagation()}
-          className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-700 group-hover:translate-x-0.5 transition-transform"
-        >
-          Public Audit Dossier <ArrowRight className="w-3 h-3" />
-        </Link>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              if (onOpenReportModal) onOpenReportModal(project);
+            }}
+            className="text-xs font-semibold px-2 py-1 rounded-xs bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300"
+          >
+            Check-in
+          </button>
+          <Link
+            href={`/projects/${project.id}`}
+            onClick={(e) => e.stopPropagation()}
+            className="text-xs font-bold text-blue-700 hover:text-blue-900 flex items-center gap-0.5"
+          >
+            Audit Record <ArrowRight className="w-3 h-3" />
+          </Link>
+        </div>
       </div>
     </div>
   );
