@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Project, ReportKind } from '@/lib/types';
-import { addCitizenReport } from '@/lib/api';
+import { postCitizenReport } from '@/lib/api';
 import { X, MapPin, CheckCircle, AlertTriangle, AlertOctagon, Wrench, Search, Loader2 } from 'lucide-react';
 
 interface ReportModalProps {
@@ -51,7 +51,7 @@ export const ReportModal: React.FC<ReportModalProps> = ({
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!description.trim()) return;
 
@@ -60,18 +60,13 @@ export const ReportModal: React.FC<ReportModalProps> = ({
     const lng = gpsLocation?.lng || project.coordinates.lng;
 
     try {
-      const res = addCitizenReport(
-        project.id,
-        {
-          projectId: project.id,
-          kind,
-          description,
-          reportedLat: lat,
-          reportedLng: lng,
-          reporterHandle: reporterHandle.trim() || 'Anonymous Resident'
-        },
-        project.coordinates
-      );
+      const res = await postCitizenReport(project.id, {
+        kind,
+        description,
+        reportedLat: lat,
+        reportedLng: lng,
+        reporterHandle: reporterHandle.trim() || 'Anonymous Resident'
+      });
 
       setSuccessResult({
         status: res.status,

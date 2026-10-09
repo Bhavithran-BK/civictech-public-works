@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { getProjectById, logDelay } from '@/lib/api';
+import { fetchProjectById, postProjectDelay } from '@/lib/api';
 import { Project } from '@/lib/types';
 import { StatusBadge, HealthScoreMeter, WorkTypeIcon } from '@/components/ui/Badges';
 import { ReportModal } from '@/components/project/ReportModal';
@@ -42,19 +42,22 @@ function ProjectDetailContent() {
   const [officerName, setOfficerName] = useState('Ward Executive Engineer');
   const [activeTab, setActiveTab] = useState<'timeline' | 'delays' | 'reports'>('timeline');
 
-  useEffect(() => {
+  const loadProject = React.useCallback(async () => {
     if (!projectId) return;
-    const p = getProjectById(projectId);
+    const p = await fetchProjectById(projectId);
     if (p) {
       setProject(p);
       setNewEndDate(p.plannedEndDate);
-      // Generate QR Code for physical site boards
       const publicUrl = typeof window !== 'undefined' ? window.location.href : `https://digonce.gov.in/projects/${projectId}`;
       QRCode.toDataURL(publicUrl, { width: 220, margin: 1 })
         .then((url: string) => setQrDataUrl(url))
         .catch(() => {});
     }
   }, [projectId]);
+
+  useEffect(() => {
+    loadProject();
+  }, [loadProject]);
 
   if (!project) {
     return (
@@ -64,15 +67,19 @@ function ProjectDetailContent() {
     );
   }
 
-  const handleDelaySubmit = (e: React.FormEvent) => {
+  const handleDelaySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!delayReason.trim()) {
       alert('Mandatory delay reason required per municipal accountability policy');
       return;
     }
     try {
-      const updated = logDelay(project.id, delayReason, newEndDate, officerName);
-      setProject({ ...updated });
+      const res = await postProjectDelay(project.id, {
+        reason: delayReason,
+        newEndDate,
+        officerName
+      });
+      setProject({ ...res.project });
       setShowDelayModal(false);
       setDelayReason('');
     } catch (err: any) {

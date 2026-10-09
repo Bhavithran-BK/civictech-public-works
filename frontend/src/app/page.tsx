@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import dynamic from 'next/dynamic';
-import { getProjects } from '@/lib/api';
+import { fetchProjects } from '@/lib/api';
 import { Project, WorkType, ProjectStatus } from '@/lib/types';
 import { ProjectCard } from '@/components/project/ProjectCard';
 import { ReportModal } from '@/components/project/ReportModal';
@@ -32,13 +32,30 @@ const InteractiveMap = dynamic(() => import('@/components/map/InteractiveMap'), 
 });
 
 export default function CitizenPortalPage() {
-  const [projects, setProjects] = useState<Project[]>(() => getProjects());
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState<WorkType | 'all'>('all');
   const [statusFilter, setStatusFilter] = useState<ProjectStatus | 'all'>('all');
   const [reportingProject, setReportingProject] = useState<Project | null>(null);
   const [activeTab, setActiveTab] = useState<'map' | 'list'>('map'); // mobile switcher
+
+  const loadProjectsFromApi = React.useCallback(async () => {
+    try {
+      setLoading(true);
+      const data = await fetchProjects(typeFilter, statusFilter);
+      setProjects(data);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  }, [typeFilter, statusFilter]);
+
+  React.useEffect(() => {
+    loadProjectsFromApi();
+  }, [loadProjectsFromApi]);
 
   const filteredProjects = useMemo(() => {
     return projects.filter((p) => {
@@ -48,15 +65,12 @@ export default function CitizenPortalPage() {
         p.roadName.toLowerCase().includes(searchQuery.toLowerCase()) ||
         p.departmentName.toLowerCase().includes(searchQuery.toLowerCase());
 
-      const matchesType = typeFilter === 'all' || p.type === typeFilter;
-      const matchesStatus = statusFilter === 'all' || p.status === statusFilter;
-
-      return matchesSearch && matchesType && matchesStatus;
+      return matchesSearch;
     });
-  }, [projects, searchQuery, typeFilter, statusFilter]);
+  }, [projects, searchQuery]);
 
   const handleRefresh = () => {
-    setProjects(getProjects());
+    loadProjectsFromApi();
   };
 
   const activeProject = useMemo(
