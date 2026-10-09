@@ -1,0 +1,183 @@
+[
+  {
+    "id": "prj-101",
+    "referenceCode": "GCC-WD172-RD-04",
+    "title": "Anna Salai Smart Arterial Paving & Storm Drain Rebuild",
+    "purpose": "Re-laying bituminous asphalt wearing course and widening stormwater culverts ahead of the northeast monsoon.",
+    "type": "road",
+    "departmentId": "dept-roads",
+    "departmentName": "Greater Chennai Corporation (GCC)",
+    "contractor": "L&T Infrastructure Engineering Ltd",
+    "budgetInr": 18500000,
+    "startDate": "2026-08-15",
+    "plannedEndDate": "2026-10-30",
+    "status": "delayed",
+    "healthScore": 54,
+    "wardNumber": 172,
+    "wardName": "Teynampet Central",
+    "roadName": "Anna Salai Arterial Corridor",
+    "coordinates": {
+      "lat": 13.0428,
+      "lng": 80.2526
+    },
+    "corridorPath": [
+      [
+        13.048,
+        80.256
+      ],
+      [
+        13.045,
+        80.254
+      ],
+      [
+        13.0428,
+        80.2526
+      ],
+      [
+        13.039,
+        80.25
+      ]
+    ],
+    "lastOfficialUpdateDaysAgo": 9,
+    "unresolvedReportsCount": 4,
+    "delays": [
+      {
+        "id": "del-1",
+        "projectId": "prj-101",
+        "reason": "Underground fiber optical cables from non-empaneled telcos damaged during excavator milling.",
+        "previousEndDate": "2026-09-30",
+        "newEndDate": "2026-10-30",
+        "loggedAt": "2026-09-28",
+        "officerName": "S. Ramanathan (Executive Engineer, GCC)"
+      }
+    ],
+    "citizenReports": [
+      {
+        "id": "rep-1",
+        "projectId": "prj-101",
+        "kind": "no_activity",
+        "description": "Road has been dug up for 8 days with zero machinery or crew present. Causing severe morning bottle-neck.",
+        "reportedLat": 13.043,
+        "reportedLng": 80.2528,
+        "distanceMeters": 28,
+        "verified": true,
+        "createdAt": "2026-10-08",
+        "reporterHandle": "Citizen #4092"
+      }
+    ],
+    "conflicts": []
+  },
+  {
+    "id": "prj-102",
+    "referenceCode": "CMWSSB-PL-2026-89",
+    "title": "Adyar Riverbank Feeder Sewage Pipeline Replacement",
+    "purpose": "Replacing deteriorated ductile iron sewer line to curb domestic backflows during cloudburst surges.",
+    "type": "water_pipeline",
+    "departmentId": "dept-water",
+    "departmentName": "CMWSSB (Metro Water)",
+    "contractor": "Southern Waterworks Consortia",
+    "budgetInr": 9200000,
+    "startDate": "2026-09-01",
+    "plannedEndDate": "2026-11-20",
+    "status": "on_track",
+    "healthScore": 88,
+    "wardNumber": 173,
+    "wardName": "Adyar North",
+    "roadName": "Gandhi Mandapam Road",
+    "coordinates": {
+      "lat": 13.0125,
+      "lng": 80.2435
+    },
+    "corridorPath": [
+      [
+        13.015,
+        80.241
+      ],
+      [
+        13.0135,
+        80.2425
+      ],
+      [
+        13.0125,
+        80.2435
+      ],
+      [
+        13.01,
+        80.245
+      ]
+    ],
+    "lastOfficialUpdateDaysAgo": 2,
+    "unresolvedReportsCount": 0,
+    "delays": [],
+    "citizenReports": [],
+    "conflicts": []
+  },
+  {
+    "id": "prj-103",
+    "referenceCode": "TANGEDCO-CAB-441",
+    "title": "Underground 33kV HT Cable Conversion Project",
+    "purpose": "Eliminating hazardous overhead wires by laying shielded 33kV high tension cables beneath public footway.",
+    "type": "electricity",
+    "departmentId": "dept-power",
+    "departmentName": "TANGEDCO (Electricity Board)",
+    "contractor": "PowerGrid Solutions Pvt Ltd",
+    "budgetInr": 12400000,
+    "startDate": "2026-07-10",
+    "plannedEndDate": "2026-09-15",
+    "status": "stalled",
+    "healthScore": 28,
+    "wardNumber": 155,
+    "wardName": "Mylapore Heritage",
+    "roadName": "Luz Church Road",
+    "coordinates": {
+      "lat": 13.0368,
+      "lng": 80.2612
+    },
+    "corridorPath": [
+      [
+        13.039,
+        80.259
+      ],
+      [
+        13.038,
+        80.26
+      ],
+      [
+        13.0368,
+        80.2612
+      ],
+      [
+        13.0345,
+        80.263
+      ]
+    ],
+    "lastOfficialUpdateDaysAgo": 21,
+    "unresolvedReportsCount": 7,
+    "delays": [
+      {
+        "id": "del-2",
+        "projectId": "prj-103",
+        "reason": "Contractor dispute over trench restoration unit rates.",
+        "previousEndDate": "2026-08-30",
+        "newEndDate": "2026-09-15",
+        "loggedAt": "2026-08-25",
+        "officerName": "M. Anbazhagan (Divisional Engineer)"
+      }
+    ],
+    "citizenReports": [
+      {
+        "id": "rep-4",
+        "projectId": "prj-103",
+        "kind": "no_activity",
+        "description": "Trench left abandoned for past 3 weeks. Mud has washed into shops during last night rain.",
+        "reportedLat": 13.037,
+        "reportedLng": 80.2615,
+        "distanceMeters": 30,
+        "verified": true,
+        "createdAt": "2026-10-06",
+        "reporterHandle": "Mylapore Merchant Union"
+      }
+    ],
+    "conflicts": []
+  }
+]
