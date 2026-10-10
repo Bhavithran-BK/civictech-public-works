@@ -14,6 +14,7 @@ import {
   MOCK_PROJECTS,
   MOCK_USER,
 } from './mockData';
+import { normalizeProject } from './geo';
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
 
@@ -58,14 +59,18 @@ export async function fetchProjects(workType?: string, status?: string): Promise
     const url = `${BASE_URL}/projects${params.toString() ? `?${params.toString()}` : ''}`;
     const res = await fetch(url, { cache: 'no-store' });
     if (!res.ok) throw new Error('Failed to fetch projects');
-    return await res.json();
+    const data = await res.json();
+    return Array.isArray(data) ? data.map(normalizeProject) : [];
   } catch (error) {
     console.error('API Error in fetchProjects, fallback to cache:', error);
     if (typeof window !== 'undefined') {
       const stored = localStorage.getItem('digonce_projects_cache');
-      if (stored) return JSON.parse(stored);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        return Array.isArray(parsed) ? parsed.map(normalizeProject) : [];
+      }
     }
-    return localProjects;
+    return localProjects.map(normalizeProject);
   }
 }
 
@@ -73,11 +78,12 @@ export async function fetchProjectById(id: string): Promise<Project | null> {
   try {
     const res = await fetch(`${BASE_URL}/projects/${id}`, { cache: 'no-store' });
     if (!res.ok) throw new Error('Project not found');
-    return await res.json();
+    const data = await res.json();
+    return data ? normalizeProject(data) : null;
   } catch (error) {
     console.error('API Error in fetchProjectById:', error);
     const found = localProjects.find((p) => p.id === id);
-    return found || null;
+    return found ? normalizeProject(found) : null;
   }
 }
 
@@ -225,13 +231,14 @@ export const api = {
 
       const res = await fetch(`${BASE_URL}/projects?${params.toString()}`);
       if (res.ok) {
-        return await res.json();
+        const data = await res.json();
+        return Array.isArray(data) ? data.map(normalizeProject) : [];
       }
     } catch {
       // Graceful fallback
     }
 
-    let result = [...localProjects];
+    let result = localProjects.map(normalizeProject);
     if (filters?.type && filters.type !== 'all') {
       result = result.filter((p) => p.type === filters.type);
     }
@@ -250,14 +257,15 @@ export const api = {
     try {
       const res = await fetch(`${BASE_URL}/projects/${id}`);
       if (res.ok) {
-        return await res.json();
+        const data = await res.json();
+        return data ? normalizeProject(data) : null;
       }
     } catch {
       // Fallback
     }
 
     const found = localProjects.find((p) => p.id === id);
-    return found || null;
+    return found ? normalizeProject(found) : null;
   },
 
   async createProject(input: {

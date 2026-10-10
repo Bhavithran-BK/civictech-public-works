@@ -3,6 +3,7 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { fetchProjectById, postCitizenReport } from '@/lib/api';
+import { getProjectPoint } from '@/lib/geo';
 import { Project, ReportKind } from '@/lib/types';
 import { ArrowLeft, Camera, MapPin, CheckCircle, AlertTriangle, ShieldCheck, Loader2 } from 'lucide-react';
 import Link from 'next/link';
@@ -40,9 +41,10 @@ function ReportContent() {
         () => {
           // Fallback simulation near project coordinates
           if (project) {
+            const [pLat, pLng] = getProjectPoint(project);
             setGpsLocation({
-              lat: project.coordinates.lat + (Math.random() - 0.5) * 0.001,
-              lng: project.coordinates.lng + (Math.random() - 0.5) * 0.001
+              lat: pLat + (Math.random() - 0.5) * 0.001,
+              lng: pLng + (Math.random() - 0.5) * 0.001
             });
           }
           setIsLocating(false);
@@ -51,7 +53,8 @@ function ReportContent() {
       );
     } else {
       if (project) {
-        setGpsLocation({ lat: project.coordinates.lat, lng: project.coordinates.lng });
+        const [pLat, pLng] = getProjectPoint(project);
+        setGpsLocation({ lat: pLat, lng: pLng });
       }
       setIsLocating(false);
     }
@@ -62,8 +65,9 @@ function ReportContent() {
     if (!project || !description.trim()) return;
 
     setIsSubmitting(true);
-    const lat = gpsLocation?.lat || project.coordinates.lat;
-    const lng = gpsLocation?.lng || project.coordinates.lng;
+    const [pLat, pLng] = getProjectPoint(project);
+    const lat = gpsLocation?.lat ?? pLat;
+    const lng = gpsLocation?.lng ?? pLng;
 
     try {
       const res = await postCitizenReport(project.id, {

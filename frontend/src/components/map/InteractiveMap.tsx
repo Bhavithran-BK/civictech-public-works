@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef } from 'react';
 import { Project, ProjectStatus } from '@/lib/types';
+import { getProjectPoint, getProjectCorridor } from '@/lib/geo';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -63,10 +64,12 @@ export default function InteractiveMap({
       projects.forEach((proj) => {
         const isSelected = proj.id === selectedProjectId;
         const color = STATUS_COLORS[proj.status] || '#64748b';
+        const corridor = getProjectCorridor(proj);
+        const [lat, lng] = getProjectPoint(proj);
 
         // 1. Draw road trench corridor (LineString)
-        if (proj.corridorPath && proj.corridorPath.length > 1) {
-          const polyline = L.polyline(proj.corridorPath, {
+        if (corridor.length > 1) {
+          const polyline = L.polyline(corridor, {
             color: color,
             weight: isSelected ? 8 : 5,
             opacity: isSelected ? 0.95 : 0.75,
@@ -103,11 +106,11 @@ export default function InteractiveMap({
           iconAnchor: [16, 16]
         });
 
-        const marker = L.marker([proj.coordinates.lat, proj.coordinates.lng], { icon: customIcon });
+        const marker = L.marker([lat, lng], { icon: customIcon });
 
         marker.on('click', () => {
           onSelectProject(proj);
-          map.panTo([proj.coordinates.lat, proj.coordinates.lng], { animate: true });
+          map.panTo([lat, lng], { animate: true });
         });
 
         marker.addTo(layerGroup);
@@ -120,8 +123,9 @@ export default function InteractiveMap({
     if (selectedProjectId && mapInstanceRef.current) {
       const activeProj = projects.find((p) => p.id === selectedProjectId);
       if (activeProj) {
+        const [lat, lng] = getProjectPoint(activeProj);
         mapInstanceRef.current.flyTo(
-          [activeProj.coordinates.lat, activeProj.coordinates.lng],
+          [lat, lng],
           15,
           { duration: 0.8 }
         );

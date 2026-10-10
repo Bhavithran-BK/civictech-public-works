@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Project, ReportKind } from '@/lib/types';
 import { postCitizenReport } from '@/lib/api';
+import { getProjectPoint } from '@/lib/geo';
 import { X, MapPin, CheckCircle, AlertTriangle, AlertOctagon, Wrench, Search, Loader2 } from 'lucide-react';
 
 interface ReportModalProps {
@@ -38,15 +39,17 @@ export const ReportModal: React.FC<ReportModalProps> = ({
         },
         () => {
           // Fallback simulation near project coordinates
-          const simulatedLat = project.coordinates.lat + (Math.random() - 0.5) * 0.001;
-          const simulatedLng = project.coordinates.lng + (Math.random() - 0.5) * 0.001;
+          const [projLat, projLng] = getProjectPoint(project);
+          const simulatedLat = projLat + (Math.random() - 0.5) * 0.001;
+          const simulatedLng = projLng + (Math.random() - 0.5) * 0.001;
           setGpsLocation({ lat: simulatedLat, lng: simulatedLng });
           setIsLocating(false);
         },
         { enableHighAccuracy: true, timeout: 5000 }
       );
     } else {
-      setGpsLocation({ lat: project.coordinates.lat + 0.0001, lng: project.coordinates.lng + 0.0001 });
+      const [projLat, projLng] = getProjectPoint(project);
+      setGpsLocation({ lat: projLat + 0.0001, lng: projLng + 0.0001 });
       setIsLocating(false);
     }
   };
@@ -56,8 +59,9 @@ export const ReportModal: React.FC<ReportModalProps> = ({
     if (!description.trim()) return;
 
     setIsSubmitting(true);
-    const lat = gpsLocation?.lat || project.coordinates.lat;
-    const lng = gpsLocation?.lng || project.coordinates.lng;
+    const [projLat, projLng] = getProjectPoint(project);
+    const lat = gpsLocation?.lat ?? projLat;
+    const lng = gpsLocation?.lng ?? projLng;
 
     try {
       const res = await postCitizenReport(project.id, {
