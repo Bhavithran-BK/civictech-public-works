@@ -33,6 +33,7 @@ export default function InteractiveMap({
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const layerGroupRef = useRef<L.LayerGroup | null>(null);
+  const hasFittedBoundsRef = useRef(false);
 
   useEffect(() => {
     if (!mapContainerRef.current) return;
@@ -61,30 +62,57 @@ export default function InteractiveMap({
     if (layerGroup) {
       layerGroup.clearLayers();
 
+      const allPoints: [number, number][] = [];
+
       projects.forEach((proj) => {
         const isSelected = proj.id === selectedProjectId;
         const color = STATUS_COLORS[proj.status] || '#64748b';
         const corridor = getProjectCorridor(proj);
         const [lat, lng] = getProjectPoint(proj);
 
-        // 1. Draw road trench corridor (LineString)
+        if (corridor.length > 0) {
+          allPoints.push(...corridor);
+        } else {
+          allPoints.push([lat, lng]);
+        }
+
+        const locationLabel = proj.location_name || proj.roadName || 'Chennai Corridor';
+        const tooltipContent = `
+          <div style="font-size: 12px; line-height: 1.3;">
+            <strong style="color: #0f172a;">${proj.title}</strong>
+            <div style="color: #64748b; font-size: 11px; margin-top: 2px;">📍 ${locationLabel}</div>
+            <div style="font-size: 10px; font-weight: 600; text-transform: uppercase; margin-top: 3px; color: ${color};">
+              Status: ${proj.status.replace('_', ' ')}
+            </div>
+          </div>
+        `;
+
+        // 1. Draw road / railway trench corridor (LineString)
         if (corridor.length > 1) {
           const polyline = L.polyline(corridor, {
             color: color,
             weight: isSelected ? 8 : 5,
-            opacity: isSelected ? 0.95 : 0.75,
+            opacity: isSelected ? 0.95 : 0.8,
             dashArray: proj.status === 'planned' ? '6, 8' : undefined,
             lineCap: 'round',
             lineJoin: 'round'
           });
 
+          polyline.bindTooltip(tooltipContent, { sticky: true, direction: 'top', opacity: 0.95 });
           polyline.on('click', () => onSelectProject(proj));
           polyline.addTo(layerGroup);
         }
 
         // 2. Draw Centroid pin
         const hasConflict = proj.conflicts && proj.conflicts.length > 0;
-        const typeInitial = proj.type === 'road' ? 'RD' : proj.type === 'electricity' ? 'EL' : proj.type === 'metro' ? 'MR' : 'WT';
+        const typeInitial =
+          proj.type === 'road' ? 'RD' :
+          proj.type === 'electricity' || proj.type === 'electrical' ? 'EL' :
+          proj.type === 'metro' ? 'MR' :
+          proj.type === 'telecom' ? 'TC' :
+          proj.type === 'drain' ? 'DR' :
+          proj.type === 'pipeline' || proj.type === 'water_pipeline' ? 'PL' : 'PW';
+
         const markerHtml = `
           <div class="relative group cursor-pointer transition-transform duration-200 ${isSelected ? 'scale-125 z-50' : 'hover:scale-110'}">
             <div class="w-7 h-7 rounded-full flex items-center justify-center shadow-md border-2 border-white text-white font-black text-[10px] tracking-tight" style="background-color: ${color}">
@@ -108,6 +136,8 @@ export default function InteractiveMap({
 
         const marker = L.marker([lat, lng], { icon: customIcon });
 
+        marker.bindTooltip(tooltipContent, { direction: 'top', offset: [0, -14], opacity: 0.95 });
+
         marker.on('click', () => {
           onSelectProject(proj);
           map.panTo([lat, lng], { animate: true });
@@ -115,6 +145,12 @@ export default function InteractiveMap({
 
         marker.addTo(layerGroup);
       });
+
+      // Fit bounds to display all Chennai road & rail corridors on first load
+      if (!hasFittedBoundsRef.current && allPoints.length > 0 && !selectedProjectId) {
+        map.fitBounds(L.latLngBounds(allPoints), { padding: [35, 35], maxZoom: 13 });
+        hasFittedBoundsRef.current = true;
+      }
     }
   }, [projects, selectedProjectId, onSelectProject, center, zoom]);
 

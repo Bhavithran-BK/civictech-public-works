@@ -29,6 +29,8 @@ class Report(BaseModel):
     notes: Optional[str] = Field(None, validation_alias=AliasChoices("notes", "description"))
     reporter_contact: Optional[str] = Field(None, validation_alias=AliasChoices("reporter_contact", "reporterHandle"))
     created_at: str = Field(..., validation_alias=AliasChoices("created_at", "createdAt"))
+    new_health_score: Optional[int] = Field(None, validation_alias=AliasChoices("new_health_score", "newHealthScore"))
+    status: Optional[str] = None
 
     @computed_field
     @property
@@ -44,3 +46,8 @@ class Report(BaseModel):
     @property
     def description(self) -> Optional[str]:
         return self.notes
+
+    @computed_field
+    @property
+    def newHealthScore(self) -> Optional[int]:
+        return self.new_health_score

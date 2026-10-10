@@ -78,19 +78,25 @@ function ReportContent() {
         reporterHandle: reporterHandle.trim() || 'Anonymous Resident'
       });
 
+      const reportObj = res?.report || (res as any) || {};
+      const distance = reportObj.distanceMeters ?? reportObj.distance_m ?? 0;
+      const isVerified = reportObj.verified ?? true;
+      const newScore = res?.newHealthScore ?? project.healthScore ?? 100;
+
       setResult({
         success: true,
-        message: res.report.verified
-          ? `Verified! Your audit was within ${res.report.distanceMeters}m of the site. Project health updated to ${res.newHealthScore}%.`
-          : `Audit submitted. Note: GPS location was ${res.report.distanceMeters}m away from the work zone (>500m threshold).`,
-        verified: res.report.verified
+        message: isVerified
+          ? `Verified! Your audit was within ${distance}m of the site. Project health updated to ${newScore}%.`
+          : `Audit submitted. Note: GPS location was ${distance}m away from the work zone (>500m threshold).`,
+        verified: isVerified
       });
 
       setTimeout(() => {
         router.push(`/projects/${project.id}`);
       }, 2000);
-    } catch {
-      alert('Error recording citizen report.');
+    } catch (err: any) {
+      console.error('Error recording citizen report:', err);
+      alert(err?.message || 'Error recording citizen report.');
       setIsSubmitting(false);
     }
   };

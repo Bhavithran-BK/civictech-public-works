@@ -72,24 +72,31 @@ export const ReportModal: React.FC<ReportModalProps> = ({
         reporterHandle: reporterHandle.trim() || 'Anonymous Resident'
       });
 
+      const reportObj = res?.report || (res as any) || {};
+      const distance = reportObj.distanceMeters ?? reportObj.distance_m ?? 0;
+      const verified = reportObj.verified ?? true;
+      const newStatus = res?.status || project.status;
+      const newHealth = res?.newHealthScore ?? project.healthScore ?? 100;
+
       setSuccessResult({
-        status: res.status,
-        health: res.newHealthScore,
-        distance: res.report.distanceMeters ?? res.report.distance_m ?? 0,
-        verified: res.report.verified
+        status: newStatus,
+        health: newHealth,
+        distance: distance,
+        verified: verified
       });
 
       setTimeout(() => {
         setIsSubmitting(false);
-        onReportSubmitted(res.status, res.newHealthScore);
+        onReportSubmitted(newStatus, newHealth);
         onClose();
         setSuccessResult(null);
         setDescription('');
         setGpsLocation(null);
       }, 1600);
-    } catch {
+    } catch (err: any) {
+      console.error('Error submitting citizen report:', err);
       setIsSubmitting(false);
-      alert('Error submitting report.');
+      alert(err?.message || 'Error submitting report.');
     }
   };
 

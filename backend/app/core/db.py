@@ -464,6 +464,9 @@ class DatabaseStore:
             target_project["updated_at"] = datetime.now().isoformat()
             self._save_to_disk()
 
+            report_entry["new_health_score"] = new_score
+            report_entry["status"] = breakdown["derived_status"]
+
             return report_entry
 
     def add_subscription(self, project_id: str, email: str) -> Dict[str, Any]:
