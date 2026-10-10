@@ -2,20 +2,36 @@ from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, Optional
 from fastapi import Depends, Header, HTTPException, status
 import jwt
+from jwt import PyJWKClient
+from jwt.exceptions import (
+    DecodeError,
+    ExpiredSignatureError,
+    InvalidSignatureError,
+    InvalidTokenError,
+    PyJWKClientError,
+    PyJWKError,
+)
 
 from app.core.config import settings
 from app.core.db import db
 from app.core.errors import AppError
 from app.schemas.auth import User
 
+# Derive JWKS URL by stripping any trailing slash from SUPABASE_URL
+jwks_url = f"{settings.SUPABASE_URL.rstrip('/')}/auth/v1/.well-known/jwks.json"
+jwks_client = PyJWKClient(jwks_url)
+
 
 def create_access_token(user_id: str, email: str, role: str, department_id: Optional[str] = None) -> str:
     """Creates a signed JWT compatible with Supabase Auth structure."""
+    expected_issuer = f"{settings.SUPABASE_URL.rstrip('/')}/auth/v1"
     payload = {
         "sub": user_id,
         "email": email,
         "role": role,
         "department_id": department_id,
+        "iss": expected_issuer,
+        "aud": "authenticated",
         "exp": datetime.now(timezone.utc) + timedelta(days=7),
         "iat": datetime.now(timezone.utc),
     }
@@ -23,7 +39,11 @@ def create_access_token(user_id: str, email: str, role: str, department_id: Opti
 
 
 def decode_token(token: str) -> Dict[str, Any]:
-    """Decodes and validates a genuine Supabase or local JWT token."""
+    """
+    Decodes and validates Supabase JWT tokens.
+    Supports current ES256 tokens via JWKS and legacy HS256 tokens via SUPABASE_JWT_SECRET.
+    Strictly restricts allowed algorithms and validates token issuer.
+    """
     # Allow frontend demo fallback tokens only during non-production testing
     if (token.startswith("jwt-demo-") or token == "demo-token") and settings.DEBUG:
         users = db.get_users()
@@ -43,22 +63,75 @@ def decode_token(token: str) -> Dict[str, Any]:
             "aud": "authenticated",
         }
 
+    # Safely inspect unverified header without trusting it for signature verification
     try:
-        # Standard Supabase JWT validation
-        payload = jwt.decode(
-            token,
-            settings.SUPABASE_JWT_SECRET,
-            algorithms=["HS256"],
-            options={"verify_exp": True, "verify_signature": True},
-        )
-        # Verify audience if claim is present
-        if "aud" in payload and payload["aud"] not in ["authenticated", "anon"]:
-            raise AppError("INVALID_AUDIENCE", "Token audience mismatch", status.HTTP_401_UNAUTHORIZED)
-        return payload
-    except jwt.ExpiredSignatureError:
-        raise AppError("TOKEN_EXPIRED", "Authentication token has expired", status.HTTP_401_UNAUTHORIZED)
-    except jwt.InvalidTokenError:
-        raise AppError("INVALID_TOKEN", "Invalid authentication token signature", status.HTTP_401_UNAUTHORIZED)
+        header = jwt.get_unverified_header(token)
+    except Exception:
+        raise AppError("INVALID_TOKEN", "Malformed or unreadable token header", status.HTTP_401_UNAUTHORIZED)
+
+    if not isinstance(header, dict):
+        raise AppError("INVALID_TOKEN", "Invalid token header format", status.HTTP_401_UNAUTHORIZED)
+
+    alg = header.get("alg")
+    # Explicit algorithm allowlist: never allow arbitrary or unverified algorithms
+    if alg not in ("ES256", "HS256"):
+        raise AppError("INVALID_TOKEN", f"Unsupported token algorithm: '{alg}'", status.HTTP_401_UNAUTHORIZED)
+
+    expected_issuer = f"{settings.SUPABASE_URL.rstrip('/')}/auth/v1"
+
+    if alg == "ES256":
+        kid = header.get("kid")
+        if not kid:
+            raise AppError("INVALID_TOKEN", "Missing key ID (kid) in token header", status.HTTP_401_UNAUTHORIZED)
+
+        try:
+            signing_key = jwks_client.get_signing_key_from_jwt(token)
+            key = signing_key.key
+        except (PyJWKClientError, PyJWKError, Exception):
+            raise AppError(
+                "INVALID_TOKEN",
+                "Failed to retrieve signing key for token verification",
+                status.HTTP_401_UNAUTHORIZED,
+            )
+
+        try:
+            payload = jwt.decode(
+                token,
+                key,
+                algorithms=["ES256"],
+                options={"verify_exp": True, "verify_signature": True, "verify_aud": False},
+            )
+        except ExpiredSignatureError:
+            raise AppError("TOKEN_EXPIRED", "Authentication token has expired", status.HTTP_401_UNAUTHORIZED)
+        except InvalidTokenError:
+            raise AppError("INVALID_TOKEN", "Invalid authentication token signature", status.HTTP_401_UNAUTHORIZED)
+
+        # ES256 Supabase Auth tokens must have the expected issuer
+        if payload.get("iss") != expected_issuer:
+            raise AppError("INVALID_TOKEN", "Token issuer mismatch", status.HTTP_401_UNAUTHORIZED)
+
+    else:  # alg == "HS256"
+        try:
+            payload = jwt.decode(
+                token,
+                settings.SUPABASE_JWT_SECRET,
+                algorithms=["HS256"],
+                options={"verify_exp": True, "verify_signature": True, "verify_aud": False},
+            )
+        except ExpiredSignatureError:
+            raise AppError("TOKEN_EXPIRED", "Authentication token has expired", status.HTTP_401_UNAUTHORIZED)
+        except InvalidTokenError:
+            raise AppError("INVALID_TOKEN", "Invalid authentication token signature", status.HTTP_401_UNAUTHORIZED)
+
+        # Validate issuer if present in HS256 payload
+        if "iss" in payload and payload["iss"] != expected_issuer:
+            raise AppError("INVALID_TOKEN", "Token issuer mismatch", status.HTTP_401_UNAUTHORIZED)
+
+    # Verify audience if claim is present
+    if "aud" in payload and payload["aud"] not in ["authenticated", "anon"]:
+        raise AppError("INVALID_AUDIENCE", "Token audience mismatch", status.HTTP_401_UNAUTHORIZED)
+
+    return payload
 
 
 def check_department_access(user: User, project_department_id: str) -> None:

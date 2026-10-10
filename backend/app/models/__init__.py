@@ -15,9 +15,11 @@ from sqlalchemy import (
     Numeric,
     String,
     Text,
+    UniqueConstraint,
     func,
+    text,
 )
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from geoalchemy2 import Geometry
 
@@ -29,7 +31,12 @@ class Base(DeclarativeBase):
 class DepartmentModel(Base):
     __tablename__ = "departments"
 
-    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    id: Mapped[str] = mapped_column(
+        PG_UUID(as_uuid=False),
+        primary_key=True,
+        default=lambda: str(uuid.uuid4()),
+        server_default=text("uuid_generate_v4()"),
+    )
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     code: Mapped[str] = mapped_column(String(50), nullable=False, unique=True)
     type: Mapped[str] = mapped_column(String(100), nullable=False)
@@ -44,11 +51,24 @@ class DepartmentModel(Base):
 class UserModel(Base):
     __tablename__ = "users"
 
-    id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    id: Mapped[str] = mapped_column(
+        PG_UUID(as_uuid=False),
+        primary_key=True,
+        default=lambda: str(uuid.uuid4()),
+    )
     email: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
     full_name: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
-    department_id: Mapped[Optional[str]] = mapped_column(String(36), ForeignKey("departments.id", ondelete="SET NULL"), nullable=True)
-    role: Mapped[str] = mapped_column(String(50), nullable=False, default="officer")
+    department_id: Mapped[Optional[str]] = mapped_column(
+        PG_UUID(as_uuid=False),
+        ForeignKey("departments.id", ondelete="SET NULL"),
+        nullable=True,
+    )
+    role: Mapped[str] = mapped_column(
+        String(50),
+        nullable=False,
+        default="officer",
+        server_default=text("'officer'"),
+    )
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     # Relationships
@@ -58,31 +78,55 @@ class UserModel(Base):
 class ProjectModel(Base):
     __tablename__ = "projects"
 
-    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    id: Mapped[str] = mapped_column(
+        PG_UUID(as_uuid=False),
+        primary_key=True,
+        default=lambda: str(uuid.uuid4()),
+        server_default=text("uuid_generate_v4()"),
+    )
     title: Mapped[str] = mapped_column(String(255), nullable=False)
     purpose: Mapped[str] = mapped_column(Text, nullable=False)
     type: Mapped[str] = mapped_column(String(50), nullable=False)
-    department_id: Mapped[str] = mapped_column(String(36), ForeignKey("departments.id", ondelete="RESTRICT"), nullable=False)
+    department_id: Mapped[str] = mapped_column(
+        PG_UUID(as_uuid=False),
+        ForeignKey("departments.id", ondelete="RESTRICT"),
+        nullable=False,
+    )
     contractor: Mapped[str] = mapped_column(String(255), nullable=False)
     budget: Mapped[float] = mapped_column(Numeric(15, 2), nullable=False)
     start_date: Mapped[date] = mapped_column(Date, nullable=False)
     end_date: Mapped[date] = mapped_column(Date, nullable=False)
     original_end_date: Mapped[date] = mapped_column(Date, nullable=False)
-    status: Mapped[str] = mapped_column(String(50), nullable=False, default="planned")
-    health_score: Mapped[int] = mapped_column(Integer, nullable=False, default=100)
+    status: Mapped[str] = mapped_column(
+        String(50),
+        nullable=False,
+        default="planned",
+        server_default=text("'planned'"),
+    )
+    health_score: Mapped[int] = mapped_column(
+        Integer,
+        nullable=False,
+        default=100,
+        server_default=text("100"),
+    )
     location_name: Mapped[str] = mapped_column(String(255), nullable=False)
     ward: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
-    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+    )
 
-    # PostGIS Spatial Geometries
-    # LineString for project trench/road corridor, Point for centroid
-    geom = Column(Geometry(geometry_type="LINESTRING", srid=4326), nullable=True)
-    centroid = Column(Geometry(geometry_type="POINT", srid=4326), nullable=True)
+    # PostGIS Spatial Geometries (NOT NULL as per docs/schema.sql)
+    geom = Column(Geometry(geometry_type="LINESTRING", srid=4326), nullable=False)
+    centroid = Column(Geometry(geometry_type="POINT", srid=4326), nullable=False)
 
     __table_args__ = (
         CheckConstraint("end_date >= start_date", name="check_dates"),
         CheckConstraint("health_score >= 0 AND health_score <= 100", name="check_health_score"),
+        Index("idx_projects_geom", "geom", postgresql_using="gist"),
+        Index("idx_projects_centroid", "centroid", postgresql_using="gist"),
         Index("idx_projects_department", "department_id"),
         Index("idx_projects_status", "status"),
         Index("idx_projects_dates", "start_date", "end_date"),
@@ -90,20 +134,45 @@ class ProjectModel(Base):
 
     # Relationships
     department: Mapped[DepartmentModel] = relationship("DepartmentModel", back_populates="projects")
-    updates: Mapped[List["ProjectUpdateModel"]] = relationship("ProjectUpdateModel", back_populates="project", cascade="all, delete-orphan")
-    delays: Mapped[List["DelayModel"]] = relationship("DelayModel", back_populates="project", cascade="all, delete-orphan")
-    reports: Mapped[List["ReportModel"]] = relationship("ReportModel", back_populates="project", cascade="all, delete-orphan")
-    subscriptions: Mapped[List["SubscriptionModel"]] = relationship("SubscriptionModel", back_populates="project", cascade="all, delete-orphan")
+    updates: Mapped[List["ProjectUpdateModel"]] = relationship(
+        "ProjectUpdateModel", back_populates="project", cascade="all, delete-orphan"
+    )
+    delays: Mapped[List["DelayModel"]] = relationship(
+        "DelayModel", back_populates="project", cascade="all, delete-orphan"
+    )
+    reports: Mapped[List["ReportModel"]] = relationship(
+        "ReportModel", back_populates="project", cascade="all, delete-orphan"
+    )
+    subscriptions: Mapped[List["SubscriptionModel"]] = relationship(
+        "SubscriptionModel", back_populates="project", cascade="all, delete-orphan"
+    )
 
 
 class ProjectUpdateModel(Base):
     __tablename__ = "project_updates"
 
-    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    project_id: Mapped[str] = mapped_column(String(36), ForeignKey("projects.id", ondelete="CASCADE"), nullable=False)
-    author_id: Mapped[Optional[str]] = mapped_column(String(36), ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    id: Mapped[str] = mapped_column(
+        PG_UUID(as_uuid=False),
+        primary_key=True,
+        default=lambda: str(uuid.uuid4()),
+        server_default=text("uuid_generate_v4()"),
+    )
+    project_id: Mapped[str] = mapped_column(
+        PG_UUID(as_uuid=False),
+        ForeignKey("projects.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    author_id: Mapped[Optional[str]] = mapped_column(
+        PG_UUID(as_uuid=False),
+        ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True,
+    )
     note: Mapped[str] = mapped_column(Text, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+    __table_args__ = (
+        Index("idx_project_updates_project", "project_id"),
+    )
 
     # Relationships
     project: Mapped[ProjectModel] = relationship("ProjectModel", back_populates="updates")
@@ -112,16 +181,30 @@ class ProjectUpdateModel(Base):
 class DelayModel(Base):
     __tablename__ = "delays"
 
-    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    project_id: Mapped[str] = mapped_column(String(36), ForeignKey("projects.id", ondelete="CASCADE"), nullable=False)
+    id: Mapped[str] = mapped_column(
+        PG_UUID(as_uuid=False),
+        primary_key=True,
+        default=lambda: str(uuid.uuid4()),
+        server_default=text("uuid_generate_v4()"),
+    )
+    project_id: Mapped[str] = mapped_column(
+        PG_UUID(as_uuid=False),
+        ForeignKey("projects.id", ondelete="CASCADE"),
+        nullable=False,
+    )
     reason: Mapped[str] = mapped_column(Text, nullable=False)
     old_end_date: Mapped[date] = mapped_column(Date, nullable=False)
     new_end_date: Mapped[date] = mapped_column(Date, nullable=False)
-    logged_by: Mapped[Optional[str]] = mapped_column(String(36), ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    logged_by: Mapped[Optional[str]] = mapped_column(
+        PG_UUID(as_uuid=False),
+        ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True,
+    )
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     __table_args__ = (
         CheckConstraint("new_end_date > old_end_date", name="check_delay_dates"),
+        CheckConstraint("length(trim(reason)) > 0", name="check_delay_reason_non_empty"),
         Index("idx_delays_project", "project_id"),
     )
 
@@ -132,15 +215,29 @@ class DelayModel(Base):
 class ReportModel(Base):
     __tablename__ = "reports"
 
-    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    project_id: Mapped[str] = mapped_column(String(36), ForeignKey("projects.id", ondelete="CASCADE"), nullable=False)
+    id: Mapped[str] = mapped_column(
+        PG_UUID(as_uuid=False),
+        primary_key=True,
+        default=lambda: str(uuid.uuid4()),
+        server_default=text("uuid_generate_v4()"),
+    )
+    project_id: Mapped[str] = mapped_column(
+        PG_UUID(as_uuid=False),
+        ForeignKey("projects.id", ondelete="CASCADE"),
+        nullable=False,
+    )
     kind: Mapped[str] = mapped_column(String(50), nullable=False)
     photo_url: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     photo_hash: Mapped[Optional[str]] = mapped_column(String(128), nullable=True)
     lat: Mapped[float] = mapped_column(Float, nullable=False)
     lng: Mapped[float] = mapped_column(Float, nullable=False)
     distance_m: Mapped[float] = mapped_column(Float, nullable=False)
-    verified: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    verified: Mapped[bool] = mapped_column(
+        Boolean,
+        nullable=False,
+        default=False,
+        server_default=text("FALSE"),
+    )
     reporter_contact: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     notes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
@@ -158,12 +255,22 @@ class ReportModel(Base):
 class SubscriptionModel(Base):
     __tablename__ = "subscriptions"
 
-    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    project_id: Mapped[str] = mapped_column(String(36), ForeignKey("projects.id", ondelete="CASCADE"), nullable=False)
+    id: Mapped[str] = mapped_column(
+        PG_UUID(as_uuid=False),
+        primary_key=True,
+        default=lambda: str(uuid.uuid4()),
+        server_default=text("uuid_generate_v4()"),
+    )
+    project_id: Mapped[str] = mapped_column(
+        PG_UUID(as_uuid=False),
+        ForeignKey("projects.id", ondelete="CASCADE"),
+        nullable=False,
+    )
     email: Mapped[str] = mapped_column(String(255), nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     __table_args__ = (
+        UniqueConstraint("project_id", "email", name="uq_subscriptions_project_email"),
         Index("idx_subscriptions_project", "project_id"),
     )
 
