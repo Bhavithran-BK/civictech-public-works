@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.env
+!.env.example
+.venv/
+env/
+venv/
+*.log
+data/
+local_db.json
