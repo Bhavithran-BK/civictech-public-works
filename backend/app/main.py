@@ -53,7 +53,16 @@ app.include_router(reports_router, prefix=settings.API_V1_STR)
 app.include_router(subscriptions_router, prefix=settings.API_V1_STR)
 
 
-# Health check endpoints
+# Root and Health check endpoints
+@app.get("/", tags=["Root"], summary="API Root Status")
+async def root():
+    return {
+        "name": settings.PROJECT_NAME,
+        "status": "online",
+        "documentation": "/docs",
+        "api_v1": settings.API_V1_STR,
+    }
+
 @app.get("/health", tags=["Health"], summary="Health check endpoint")
 @app.get(f"{settings.API_V1_STR}/health", tags=["Health"], summary="API v1 Health check endpoint")
 async def health_check():
