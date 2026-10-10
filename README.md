@@ -1,18 +1,21 @@
 # 🚧 DigOnce — Public Works Coordination & Civic Accountability Platform
 
 [![Live Application](https://img.shields.io/badge/Live%20Demo-civictech--frontend-brightgreen?style=for-the-badge&logo=render)](https://civictech-frontend-ud13.onrender.com/)
+[![Video Walkthrough](https://img.shields.io/badge/Video%20Demo-Google%20Drive-E53935?style=for-the-badge&logo=googledrive&logoColor=white)](https://drive.google.com/file/d/1V3R8fjDaGPs5w8hQHVVUE3rXrchyYZb-/view?usp=drive_link)
 [![API Status](https://img.shields.io/badge/API-Live%20on%20Render-blue?style=for-the-badge&logo=fastapi)](https://civictech-public-works.onrender.com/api/v1/health)
 [![API Docs](https://img.shields.io/badge/Swagger-OpenAPI%20Docs-informational?style=for-the-badge&logo=swagger)](https://civictech-public-works.onrender.com/docs)
 [![Tests Passing](https://img.shields.io/badge/Test%20Suite-66%2F66%20Passed-success?style=for-the-badge&logo=pytest)](https://github.com/Bhavithran-BK/civictech-public-works)
 
-> **Eliminating duplicate digging, coordinating multi-department utility cuts, and restoring civic transparency.**
+> **Eliminating duplicate digging, coordinating multi-department utility cuts, and restoring civic transparency.**  
+> 🎥 **Video Demo Walkthrough**: [Watch the 2-Minute Demonstration on Google Drive](https://drive.google.com/file/d/1V3R8fjDaGPs5w8hQHVVUE3rXrchyYZb-/view?usp=drive_link)
 
 ---
 
-## 🌐 Public Deployed Links
+## 🌐 Public Deployed Links & Video Demo
 
-| Service | Public URL | Description |
+| Resource | Public URL | Description |
 | :--- | :--- | :--- |
+| **🎬 Video Demo Walkthrough** | **[Watch on Google Drive](https://drive.google.com/file/d/1V3R8fjDaGPs5w8hQHVVUE3rXrchyYZb-/view?usp=drive_link)** | 2-minute walkthrough covering citizen audits & conflict engine |
 | **🚀 Live Citizen & Authority Portal** | **[https://civictech-frontend-ud13.onrender.com/](https://civictech-frontend-ud13.onrender.com/)** | Full interactive Next.js web application |
 | **⚙️ Live Backend REST API** | **[https://civictech-public-works.onrender.com/api/v1](https://civictech-public-works.onrender.com/api/v1)** | FastAPI coordination engine & spatial endpoints |
 | **📖 Interactive API Docs (Swagger)** | **[https://civictech-public-works.onrender.com/docs](https://civictech-public-works.onrender.com/docs)** | Interactive Swagger UI testing interface |
