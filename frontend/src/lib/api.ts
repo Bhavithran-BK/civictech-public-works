@@ -71,7 +71,23 @@ export async function fetchProjects(workType?: string, status?: string): Promise
         return Array.isArray(parsed) ? parsed.map(normalizeProject) : [];
       }
     }
-    return localProjects.map(normalizeProject);
+    let res = localProjects.map(normalizeProject);
+    if (workType && workType !== 'all') {
+      const wt = workType.toLowerCase();
+      if (wt === 'water_pipeline' || wt === 'water') {
+        res = res.filter((p) => p.type === 'pipeline' || p.type === 'drain');
+      } else if (wt === 'electricity' || wt === 'electrical') {
+        res = res.filter((p) => p.type === 'electrical' || p.type === 'electricity');
+      } else if (wt === 'metro') {
+        res = res.filter((p) => p.title.toLowerCase().includes('metro') || p.type === 'metro');
+      } else {
+        res = res.filter((p) => p.type === workType);
+      }
+    }
+    if (status && status !== 'all') {
+      res = res.filter((p) => p.status === status);
+    }
+    return res;
   }
 }
 
@@ -299,7 +315,16 @@ export const api = {
 
     let result = localProjects.map(normalizeProject);
     if (filters?.type && filters.type !== 'all') {
-      result = result.filter((p) => p.type === filters.type);
+      const ft = filters.type.toLowerCase();
+      if (ft === 'water_pipeline' || ft === 'water') {
+        result = result.filter((p) => p.type === 'pipeline' || p.type === 'drain');
+      } else if (ft === 'electricity' || ft === 'electrical') {
+        result = result.filter((p) => p.type === 'electrical' || p.type === 'electricity');
+      } else if (ft === 'metro') {
+        result = result.filter((p) => p.title.toLowerCase().includes('metro') || p.type === 'metro');
+      } else {
+        result = result.filter((p) => p.type === filters.type);
+      }
     }
     if (filters?.department_id && filters.department_id !== 'all') {
       result = result.filter(

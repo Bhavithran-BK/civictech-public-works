@@ -36,22 +36,22 @@ export default function CitizenPortalPage() {
   const [loading, setLoading] = useState(true);
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [typeFilter, setTypeFilter] = useState<WorkType | 'all'>('all');
-  const [statusFilter, setStatusFilter] = useState<ProjectStatus | 'all'>('all');
+  const [typeFilter, setTypeFilter] = useState<string>('all');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
   const [reportingProject, setReportingProject] = useState<Project | null>(null);
   const [activeTab, setActiveTab] = useState<'map' | 'list'>('map'); // mobile switcher
 
   const loadProjectsFromApi = React.useCallback(async () => {
     try {
       setLoading(true);
-      const data = await fetchProjects(typeFilter, statusFilter);
+      const data = await fetchProjects();
       setProjects(data);
     } catch (e) {
       console.error(e);
     } finally {
       setLoading(false);
     }
-  }, [typeFilter, statusFilter]);
+  }, []);
 
   React.useEffect(() => {
     loadProjectsFromApi();
@@ -59,15 +59,51 @@ export default function CitizenPortalPage() {
 
   const filteredProjects = useMemo(() => {
     return projects.filter((p) => {
-      const matchesSearch =
-        p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (p.referenceCode?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) ||
-        ((p.roadName || p.location_name)?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) ||
-        ((p.departmentName || p.department_name)?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false);
+      // 1. Text Search Filter
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        const matches =
+          p.title.toLowerCase().includes(q) ||
+          (p.referenceCode?.toLowerCase().includes(q) ?? false) ||
+          ((p.roadName || p.location_name)?.toLowerCase().includes(q) ?? false) ||
+          ((p.departmentName || p.department_name)?.toLowerCase().includes(q) ?? false) ||
+          (p.contractor?.toLowerCase().includes(q) ?? false) ||
+          (p.ward?.toLowerCase().includes(q) ?? false);
+        if (!matches) return false;
+      }
 
-      return matchesSearch;
+      // 2. Utility Type Filter
+      if (typeFilter && typeFilter !== 'all') {
+        const pType = (p.type || '').toLowerCase();
+        if (typeFilter === 'road') {
+          if (pType !== 'road') return false;
+        } else if (typeFilter === 'water_pipeline' || typeFilter === 'pipeline' || typeFilter === 'water') {
+          if (pType !== 'pipeline' && pType !== 'drain' && pType !== 'water_pipeline' && pType !== 'drainage') return false;
+        } else if (typeFilter === 'drain') {
+          if (pType !== 'drain' && pType !== 'drainage') return false;
+        } else if (typeFilter === 'electricity' || typeFilter === 'electrical') {
+          if (pType !== 'electrical' && pType !== 'electricity') return false;
+        } else if (typeFilter === 'telecom') {
+          if (pType !== 'telecom') return false;
+        } else if (typeFilter === 'metro') {
+          const isMetro =
+            pType === 'metro' ||
+            p.title.toLowerCase().includes('metro') ||
+            (p.purpose && p.purpose.toLowerCase().includes('metro'));
+          if (!isMetro) return false;
+        } else if (pType !== typeFilter.toLowerCase()) {
+          return false;
+        }
+      }
+
+      // 3. Status Filter
+      if (statusFilter && statusFilter !== 'all') {
+        if (p.status !== statusFilter) return false;
+      }
+
+      return true;
     });
-  }, [projects, searchQuery]);
+  }, [projects, searchQuery, typeFilter, statusFilter]);
 
   const handleRefresh = () => {
     loadProjectsFromApi();
@@ -148,19 +184,20 @@ export default function CitizenPortalPage() {
             <div className="grid grid-cols-2 gap-2">
               <select
                 value={typeFilter}
-                onChange={(e) => setTypeFilter(e.target.value as any)}
+                onChange={(e) => setTypeFilter(e.target.value)}
                 className="text-xs px-2 py-1.5 border border-slate-300 rounded-md bg-white text-slate-700"
               >
                 <option value="all">All Utility Types</option>
                 <option value="road">Road Resurfacing</option>
                 <option value="water_pipeline">Water / Drainage</option>
                 <option value="electricity">Electric Cables</option>
+                <option value="telecom">Telecom & Fiber</option>
                 <option value="metro">Metro Works</option>
               </select>
 
               <select
                 value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value as any)}
+                onChange={(e) => setStatusFilter(e.target.value)}
                 className="text-xs px-2 py-1.5 border border-slate-300 rounded-md bg-white text-slate-700"
               >
                 <option value="all">All Statuses</option>
@@ -169,6 +206,7 @@ export default function CitizenPortalPage() {
                 <option value="delayed">Delayed</option>
                 <option value="stalled">Stalled</option>
                 <option value="planned">Planned</option>
+                <option value="completed">Completed</option>
               </select>
             </div>
 

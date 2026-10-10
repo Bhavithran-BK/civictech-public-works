@@ -260,7 +260,20 @@ class DatabaseStore:
             results = list(self.projects)
 
         if project_type and project_type != "all":
-            results = [p for p in results if p.get("type") == project_type]
+            pt = project_type.lower()
+            if pt in ("water_pipeline", "water", "drainage"):
+                results = [p for p in results if p.get("type") in ("pipeline", "drain", "water_pipeline", "drainage")]
+            elif pt in ("electricity", "electric"):
+                results = [p for p in results if p.get("type") in ("electrical", "electricity")]
+            elif pt in ("metro", "railway", "transit"):
+                results = [
+                    p for p in results
+                    if "metro" in p.get("title", "").lower()
+                    or "rail" in p.get("title", "").lower()
+                    or p.get("type") == "metro"
+                ]
+            else:
+                results = [p for p in results if p.get("type") == project_type]
         if department_id and department_id != "all":
             results = [p for p in results if p.get("department_id") == department_id]
         if status and status != "all":
