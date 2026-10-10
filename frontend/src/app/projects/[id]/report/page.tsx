@@ -18,6 +18,7 @@ function ReportContent() {
   const [description, setDescription] = useState('');
   const [reporterHandle, setReporterHandle] = useState('');
   const [gpsLocation, setGpsLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [photoDataUrl, setPhotoDataUrl] = useState<string | null>(null);
   const [isLocating, setIsLocating] = useState(false);
   const [locationError, setLocationError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -208,6 +209,49 @@ function ReportContent() {
                   placeholder="E.g., Ward 172 Resident or Community Club"
                   className="w-full text-xs p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100"
                 />
+              </div>
+
+              {/* Site Photo Evidence Attachment */}
+              <div className="p-3 bg-slate-50 dark:bg-slate-950/80 rounded-xl border border-slate-200 dark:border-slate-800 space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Camera className="w-4 h-4 text-slate-600 dark:text-slate-400" />
+                    <span className="text-xs font-medium text-slate-700 dark:text-slate-300">
+                      Site Photo Evidence (Optional)
+                    </span>
+                  </div>
+                  <label className="text-xs font-semibold px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-100 cursor-pointer transition-colors">
+                    <span>{photoDataUrl ? 'Change Photo' : 'Attach Photo'}</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      capture="environment"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onload = (ev) => {
+                            setPhotoDataUrl(ev.target?.result as string);
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
+                  </label>
+                </div>
+                {photoDataUrl && (
+                  <div className="relative w-full h-32 rounded-lg overflow-hidden border border-slate-200">
+                    <img src={photoDataUrl} alt="Site evidence preview" className="w-full h-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => setPhotoDataUrl(null)}
+                      className="absolute top-1.5 right-1.5 px-2 py-0.5 bg-slate-900/80 text-white rounded text-[10px] hover:bg-red-600 transition-colors"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                )}
               </div>
 
               {/* Geo-location Verification Box */}
