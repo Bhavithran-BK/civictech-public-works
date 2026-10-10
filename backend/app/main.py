@@ -59,3 +59,15 @@ app.include_router(subscriptions_router, prefix=settings.API_V1_STR)
 async def health_check():
     """Returns application health status."""
     return {"status": "ok"}
+
+
+from app.services.scheduler import start_scheduler, scheduler
+
+@app.on_event("startup")
+def on_startup():
+    start_scheduler()
+
+@app.on_event("shutdown")
+def on_shutdown():
+    if scheduler.running:
+        scheduler.shutdown()
