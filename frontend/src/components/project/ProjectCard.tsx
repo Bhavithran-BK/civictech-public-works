@@ -1,130 +1,119 @@
 import React from 'react';
-import Link from 'next/link';
 import { Project } from '@/lib/types';
-import { StatusBadge } from '@/components/ui/StatusBadge';
-import {
-  Calendar,
-  Building2,
-  HardHat,
-  AlertCircle,
-  ArrowRight,
-  Activity,
-} from 'lucide-react';
+import { StatusBadge, HealthScoreMeter, WorkTypeIcon } from '../ui/Badges';
+import { Calendar, AlertTriangle, ArrowRight, Building, FileSpreadsheet } from 'lucide-react';
+import Link from 'next/link';
 
 interface ProjectCardProps {
   project: Project;
-  isDeptView?: boolean;
+  isSelected?: boolean;
+  onSelect?: () => void;
+  onOpenReportModal?: (project: Project) => void;
 }
 
 export const ProjectCard: React.FC<ProjectCardProps> = ({
   project,
-  isDeptView = true,
+  isSelected,
+  onSelect,
+  onOpenReportModal
 }) => {
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
-      <div>
-        {/* Header: Type, Location, Status Badge */}
-        <div className="flex items-start justify-between gap-2 mb-2">
-          <div>
-            <span className="text-[10px] font-bold tracking-wider uppercase text-blue-800 bg-blue-50 px-2 py-0.5 rounded">
-              {project.type}
-            </span>
-            <p className="text-xs text-gray-500 mt-1 font-medium">
-              {project.location_name} {project.ward ? `• ${project.ward}` : ''}
-            </p>
-          </div>
-          <div className="flex flex-col items-end gap-1">
-            <StatusBadge status={project.status} healthScore={project.health_score} />
-            <div className="flex items-center gap-1 text-[11px] font-semibold text-gray-600">
-              <Activity className="w-3 h-3 text-gray-400" />
-              <span>Health: {project.health_score}/100</span>
-            </div>
-          </div>
+    <div
+      onClick={onSelect}
+      className={`relative p-3.5 rounded border transition-colors cursor-pointer bg-white ${
+        isSelected
+          ? 'border-blue-700 ring-1 ring-blue-700 shadow-xs'
+          : 'border-slate-200 hover:border-slate-400'
+      }`}
+    >
+      {/* Header: Project Reference ID & Status */}
+      <div className="flex items-center justify-between gap-2 mb-1.5">
+        <div className="flex items-center gap-1.5">
+          <span className="font-mono text-[11px] font-bold text-slate-700 bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded-xs">
+            {project.referenceCode}
+          </span>
+          <span className="text-xs text-slate-500 font-medium">Ward {project.wardNumber} ({project.wardName})</span>
         </div>
+        <StatusBadge status={project.status} size="sm" />
+      </div>
 
-        {/* 1. WHAT */}
-        <div className="mb-3">
-          <h3 className="font-bold text-gray-900 text-base leading-snug">
-            {project.title}
-          </h3>
-          <p className="text-xs text-gray-600 line-clamp-2 mt-1">
-            {project.purpose}
-          </p>
+      {/* Title */}
+      <h3 className="font-bold text-slate-900 text-sm leading-snug mb-1">
+        {project.title}
+      </h3>
+
+      {/* Municipal Agency & Corridor */}
+      <div className="text-xs text-slate-600 space-y-0.5 mb-2.5">
+        <div className="flex items-center gap-1">
+          <Building className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+          <span className="font-semibold text-slate-800">{project.departmentName}</span>
         </div>
-
-        {/* 5-Field Standard Spec */}
-        <div className="space-y-2 text-xs border-t border-gray-100 pt-2.5 my-2">
-          {/* 2. WHO */}
-          <div className="flex items-start gap-1.5 text-gray-700">
-            <Building2 className="w-3.5 h-3.5 text-gray-400 mt-0.5 shrink-0" />
-            <div>
-              <span className="font-semibold text-gray-900">Who: </span>
-              <span>{project.department_name}</span>
-              <div className="text-[11px] text-gray-500 flex items-center gap-1 mt-0.5">
-                <HardHat className="w-3 h-3" />
-                <span>Contractor: {project.contractor}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* 3. WHEN */}
-          <div className="flex items-center gap-1.5 text-gray-700">
-            <Calendar className="w-3.5 h-3.5 text-gray-400 shrink-0" />
-            <div>
-              <span className="font-semibold text-gray-900">When: </span>
-              <span>
-                {project.start_date} → {project.end_date}
-              </span>
-              {project.end_date !== project.original_end_date && (
-                <span className="text-[10px] text-rose-600 ml-1.5 font-medium">
-                  (Orig: {project.original_end_date})
-                </span>
-              )}
-            </div>
-          </div>
-
-          {/* 4. STATUS (Already Badged, textual confirmation) */}
-          <div className="flex items-center gap-1.5 text-gray-700">
-            <span className="font-semibold text-gray-900">Status: </span>
-            <span className="capitalize">{project.status.replace('_', ' ')}</span>
-          </div>
-
-          {/* 5. WHY-DELAYED */}
-          <div className="flex items-start gap-1.5">
-            <AlertCircle
-              className={`w-3.5 h-3.5 mt-0.5 shrink-0 ${
-                project.latest_delay_reason ? 'text-rose-600' : 'text-gray-300'
-              }`}
-            />
-            <div>
-              <span className="font-semibold text-gray-900">Why-delayed: </span>
-              {project.latest_delay_reason ? (
-                <span className="text-rose-700 font-medium">
-                  {project.latest_delay_reason}
-                </span>
-              ) : (
-                <span className="text-gray-400 italic">None logged (On schedule)</span>
-              )}
-            </div>
-          </div>
+        <div className="flex items-center gap-1 text-slate-500 pl-4">
+          <span className="truncate">{project.roadName}</span>
         </div>
       </div>
 
-      {/* Action footer */}
-      {isDeptView && (
-        <div className="border-t border-gray-100 pt-3 mt-2 flex items-center justify-between">
-          <span className="text-xs font-semibold text-gray-500">
-            ₹{(project.budget / 10000000).toFixed(2)} Cr
+      {/* Mandatory 5 Fields Table */}
+      <div className="grid grid-cols-2 gap-2 text-xs py-2 border-y border-slate-100 bg-slate-50/60 px-2 rounded-xs">
+        <div>
+          <span className="text-[10px] uppercase font-bold text-slate-400 block">Contractor</span>
+          <span className="text-slate-800 font-medium truncate block">{project.contractor}</span>
+        </div>
+        <div>
+          <span className="text-[10px] uppercase font-bold text-slate-400 block">Target Completion</span>
+          <span className="text-slate-800 font-semibold flex items-center gap-1">
+            <Calendar className="w-3 h-3 text-slate-400" />
+            {project.plannedEndDate}
           </span>
-          <Link
-            href={`/dept/projects/${project.id}/edit`}
-            className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
-          >
-            <span>Update / Log Delay</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
+        </div>
+      </div>
+
+      {/* Delay / Reason if delayed */}
+      {project.delays.length > 0 && (
+        <div className="mt-2 text-[11px] bg-rose-50 border border-rose-200 p-2 rounded-xs text-rose-900">
+          <span className="font-bold">Delay Reason: </span>
+          <span>{project.delays[0].reason}</span>
         </div>
       )}
+
+      {/* Conflict Notice if any */}
+      {project.conflicts && project.conflicts.length > 0 && (
+        <div className="mt-2 text-[11px] bg-amber-50 border border-amber-300 p-2 rounded-xs text-amber-950 flex items-start gap-1.5">
+          <AlertTriangle className="w-3.5 h-3.5 text-amber-700 shrink-0 mt-0.5" />
+          <div>
+            <span className="font-bold">Dig-Once Clash: </span>
+            <span>Overlaps with {project.conflicts[0].departmentName}. Joint trenching advised.</span>
+          </div>
+        </div>
+      )}
+
+      {/* Health Score & Direct Links */}
+      <div className="mt-3 pt-2 flex items-center justify-between border-t border-slate-100">
+        <div>
+          <span className="text-[10px] font-bold uppercase text-slate-400 block">Health Index</span>
+          <HealthScoreMeter score={project.healthScore} />
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              if (onOpenReportModal) onOpenReportModal(project);
+            }}
+            className="text-xs font-semibold px-2 py-1 rounded-xs bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300"
+          >
+            Check-in
+          </button>
+          <Link
+            href={`/projects/${project.id}`}
+            onClick={(e) => e.stopPropagation()}
+            className="text-xs font-bold text-blue-700 hover:text-blue-900 flex items-center gap-0.5"
+          >
+            Audit Record <ArrowRight className="w-3 h-3" />
+          </Link>
+        </div>
+      </div>
     </div>
   );
 };
