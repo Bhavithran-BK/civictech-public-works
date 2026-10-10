@@ -45,4 +45,4 @@ services:
       - key: NODE_VERSION
         value: 20
       - key: NEXT_PUBLIC_API_URL
-        sync: false
+        value: https://civictech-public-works.onrender.com/api/v1
