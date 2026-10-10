@@ -1,8 +1,13 @@
 import json
+import os
 from pathlib import Path
 import psycopg2
+from dotenv import load_dotenv
 
-DB_URL = "postgresql://postgres.spjprbkebzbbtzpowwiw:Guru2006Muthu@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres"
+load_dotenv()
+load_dotenv("backend/.env")
+
+DB_URL = os.environ.get("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/postgres")
 MOCK_DATA_PATH = Path("docs/mock-data.json")
 
 def seed():
