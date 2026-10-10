@@ -120,7 +120,7 @@ function EditProjectContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col">
+      <div className="min-h-screen bg-gray-50 flex flex-col">
         <DeptNav />
         <div className="flex-1 flex items-center justify-center">
           <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
@@ -131,21 +131,21 @@ function EditProjectContent() {
 
   if (!project) {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col">
+      <div className="min-h-screen bg-gray-50 flex flex-col">
         <DeptNav />
-        <div className="p-8 text-center text-slate-600">Project not found.</div>
+        <div className="p-8 text-center text-gray-600">Project not found.</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen bg-gray-50 flex flex-col font-sans">
       <DeptNav />
 
       <main className="flex-1 max-w-3xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8">
         <button
           onClick={() => router.push('/dept/dashboard')}
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-900 mb-4"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-500 hover:text-gray-900 mb-4"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>Back to Authority Dashboard</span>
@@ -153,10 +153,10 @@ function EditProjectContent() {
 
         <div className="flex items-start justify-between gap-4 mb-6">
           <div>
-            <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">
               Update Project & Log Delays
             </h1>
-            <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+            <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
               {project.location_name} • {project.department_name}
             </p>
           </div>
@@ -164,11 +164,11 @@ function EditProjectContent() {
         </div>
 
         {errorMessage && (
-          <div className="mb-6 p-4 bg-rose-50 border-2 border-rose-300 rounded-xl text-xs font-semibold text-rose-800 flex items-start gap-2.5">
-            <ShieldAlert className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
+          <div className="mb-6 p-4 bg-red-50 border-2 border-red-200 rounded-xl text-xs font-semibold text-red-800 flex items-start gap-2.5">
+            <ShieldAlert className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
             <div>
               <p>{errorMessage}</p>
-              <p className="font-normal text-[11px] text-rose-600 mt-0.5">
+              <p className="font-normal text-[11px] text-red-600 mt-0.5">
                 Civic accountability rules require every delay to be justified with an official public note.
               </p>
             </div>
@@ -176,16 +176,16 @@ function EditProjectContent() {
         )}
 
         {successMessage && (
-          <div className="mb-6 p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-800 flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+          <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl text-xs text-green-800 flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-green-600 shrink-0" />
             <span>{successMessage}</span>
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-slate-200 p-5 sm:p-8 shadow-sm space-y-6">
+        <form onSubmit={handleSubmit} className="bg-white rounded border border-gray-200 p-5 sm:p-8 shadow-sm space-y-6">
           <div className="space-y-4">
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
+              <label className="block text-xs font-bold text-gray-700 mb-1">
                 Project Title (What)
               </label>
               <input
@@ -193,12 +193,12 @@ function EditProjectContent() {
                 required
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded text-sm text-gray-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
+              <label className="block text-xs font-bold text-gray-700 mb-1">
                 Scope / Purpose
               </label>
               <textarea
@@ -206,13 +206,13 @@ function EditProjectContent() {
                 required
                 value={purpose}
                 onChange={(e) => setPurpose(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded text-sm text-gray-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600"
               />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
+                <label className="block text-xs font-bold text-gray-700 mb-1">
                   Contractor (Who)
                 </label>
                 <input
@@ -220,12 +220,12 @@ function EditProjectContent() {
                   required
                   value={contractor}
                   onChange={(e) => setContractor(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded text-sm text-gray-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
+                <label className="block text-xs font-bold text-gray-700 mb-1">
                   Budget (INR ₹)
                 </label>
                 <input
@@ -233,18 +233,18 @@ function EditProjectContent() {
                   required
                   value={budget}
                   onChange={(e) => setBudget(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded text-sm text-gray-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
+                <label className="block text-xs font-bold text-gray-700 mb-1">
                   Current Status
                 </label>
                 <select
                   value={status}
                   onChange={(e) => setStatus(e.target.value as ProjectStatus)}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded text-sm text-gray-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600"
                 >
                   <option value="on_track">On track (Green)</option>
                   <option value="at_risk">At risk (Yellow)</option>
@@ -256,7 +256,7 @@ function EditProjectContent() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
+                <label className="block text-xs font-bold text-gray-700 mb-1">
                   Completion End Date (When)
                 </label>
                 <input
@@ -264,9 +264,9 @@ function EditProjectContent() {
                   required
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded text-sm text-gray-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600"
                 />
-                <div className="text-[11px] text-slate-400 mt-1">
+                <div className="text-[11px] text-gray-500 mt-1">
                   Original planned date: <span className="font-mono">{originalEndDate}</span>
                 </div>
               </div>
@@ -274,10 +274,10 @@ function EditProjectContent() {
 
             {/* MANDATORY DELAY REASON SECTION */}
             <div
-              className={`p-4 rounded-xl border transition-all ${
+              className={`p-4 rounded border transition-all ${
                 isExtendingDate || status === 'delayed'
-                  ? 'bg-rose-50 border-rose-300'
-                  : 'bg-slate-50 border-slate-200'
+                  ? 'bg-red-50 border-red-200'
+                  : 'bg-gray-50 border-gray-200'
               }`}
             >
               <div className="flex items-center justify-between mb-1.5">
@@ -285,20 +285,20 @@ function EditProjectContent() {
                   htmlFor="delayReason"
                   className={`text-xs font-bold flex items-center gap-1.5 ${
                     isExtendingDate || status === 'delayed'
-                      ? 'text-rose-900'
-                      : 'text-slate-700'
+                      ? 'text-red-900'
+                      : 'text-gray-700'
                   }`}
                 >
-                  <AlertOctagon className="w-4 h-4 text-rose-600" />
+                  <AlertOctagon className="w-4 h-4 text-red-600" />
                   <span>
                     Mandatory Reason for Delay{' '}
                     {(isExtendingDate || status === 'delayed') && (
-                      <span className="text-rose-600 font-extrabold">* (REQUIRED)</span>
+                      <span className="text-red-600 font-extrabold">* (REQUIRED)</span>
                     )}
                   </span>
                 </label>
                 {(isExtendingDate || status === 'delayed') && (
-                  <span className="text-[10px] font-bold uppercase bg-rose-200 text-rose-800 px-2 py-0.5 rounded">
+                  <span className="text-[10px] font-bold uppercase bg-red-200 text-red-800 px-2 py-0.5 rounded">
                     Submission Blocked Without Reason
                   </span>
                 )}
@@ -310,23 +310,23 @@ function EditProjectContent() {
                 value={delayReason}
                 onChange={(e) => setDelayReason(e.target.value)}
                 placeholder="State the technical or logistical reason for timeline slippage (e.g. utility relocation, monsoon inundation, contractor dispute)..."
-                className={`w-full px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 transition-all ${
+                className={`w-full px-3 py-2 rounded text-sm focus:outline-none focus:ring-1 transition-all ${
                   isExtendingDate || status === 'delayed'
-                    ? 'bg-white border-rose-300 text-slate-900 focus:ring-rose-500'
-                    : 'bg-white border-slate-200 text-slate-900 focus:ring-blue-500'
+                    ? 'bg-white border-red-300 text-gray-900 focus:ring-red-600 focus:border-red-600'
+                    : 'bg-white border-gray-200 text-gray-900 focus:ring-blue-600 focus:border-blue-600'
                 }`}
               />
-              <p className="text-[11px] text-slate-500 mt-1">
+              <p className="text-[11px] text-gray-500 mt-1">
                 This explanation directly populates the public project timeline and citizen tracking view.
               </p>
             </div>
           </div>
 
-          <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
+          <div className="pt-4 border-t border-gray-200 flex items-center justify-between">
             <button
               type="button"
               onClick={() => router.push('/dept/dashboard')}
-              className="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-900"
+              className="px-4 py-2 text-xs font-semibold text-gray-600 hover:text-gray-900"
             >
               Cancel
             </button>
@@ -334,7 +334,7 @@ function EditProjectContent() {
             <button
               type="submit"
               disabled={saving}
-              className="inline-flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold rounded-lg shadow-sm transition-all disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-6 py-2.5 bg-blue-700 hover:bg-blue-800 text-white text-xs sm:text-sm font-medium rounded shadow-sm transition-all disabled:opacity-50"
             >
               {saving ? (
                 <>
@@ -359,7 +359,7 @@ export default function EditProjectPage() {
   return (
     <React.Suspense
       fallback={
-        <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
           <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
         </div>
       }

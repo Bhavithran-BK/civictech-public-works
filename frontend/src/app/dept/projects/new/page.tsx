@@ -178,22 +178,22 @@ export default function NewProjectPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen bg-gray-50 flex flex-col font-sans">
       <DeptNav />
 
       <main className="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8">
         <div className="mb-6">
-          <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">
             Schedule New Public Works Project
           </h1>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1">
+          <p className="text-xs sm:text-sm text-gray-600 mt-1">
             Inputs are automatically validated against the PostGIS inter-department Dig-Once conflict engine.
           </p>
         </div>
 
         {formError && (
-          <div className="mb-6 p-4 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800 flex items-center gap-2">
-            <ShieldAlert className="w-4 h-4 text-rose-600 shrink-0" />
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-xs text-red-800 flex items-center gap-2">
+            <ShieldAlert className="w-4 h-4 text-red-600 shrink-0" />
             <span>{formError}</span>
           </div>
         )}
@@ -207,17 +207,17 @@ export default function NewProjectPage() {
         )}
 
         {conflictResult && conflictResult.has_conflict && (
-          <div className="mb-6 bg-gradient-to-r from-amber-50 to-rose-50 border-2 border-amber-400 rounded-2xl p-5 shadow-sm">
+          <div className="mb-6 bg-gradient-to-r from-yellow-50 to-red-50 border border-yellow-400 rounded p-5 shadow-sm">
             <div className="flex items-start gap-3">
-              <div className="p-2 bg-amber-500 text-white rounded-xl shrink-0 mt-0.5">
+              <div className="p-2 bg-yellow-500 text-white rounded shrink-0 mt-0.5">
                 <AlertTriangle className="w-5 h-5" />
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-2">
-                  <h3 className="text-sm font-extrabold text-amber-950 uppercase tracking-wide">
+                  <h3 className="text-sm font-bold text-yellow-900 uppercase tracking-wide">
                     DigOnce Conflict Warning: {conflictResult.clash_count} Clash Detected
                   </h3>
-                  <span className="text-[10px] font-bold bg-amber-200 text-amber-900 px-2 py-0.5 rounded-full">
+                  <span className="text-[10px] font-bold bg-yellow-200 text-yellow-900 px-2 py-0.5 rounded">
                     High Risk of Duplicate Digging
                   </span>
                 </div>
@@ -226,23 +226,23 @@ export default function NewProjectPage() {
                   {conflictResult.conflicting_projects.map((clash, idx) => (
                     <div
                       key={idx}
-                      className="bg-white/90 p-3 rounded-lg border border-amber-200 text-xs text-slate-800"
+                      className="bg-white p-3 rounded border border-yellow-200 text-xs text-gray-800"
                     >
-                      <div className="font-bold text-slate-900 flex items-center justify-between">
+                      <div className="font-bold text-gray-900 flex items-center justify-between">
                         <span>{clash.title}</span>
-                        <span className="text-[11px] font-semibold text-rose-600">
+                        <span className="text-[11px] font-semibold text-red-600">
                           {clash.distance_meters}m distance
                         </span>
                       </div>
-                      <p className="text-slate-600 mt-1">
-                        Department: <strong className="text-slate-800">{clash.department}</strong>
+                      <p className="text-gray-600 mt-1">
+                        Department: <strong className="text-gray-800">{clash.department}</strong>
                       </p>
-                      <p className="text-slate-600">
+                      <p className="text-gray-600">
                         Schedule: <span className="font-mono">{clash.start_date}</span> to{' '}
                         <span className="font-mono">{clash.end_date}</span>
                       </p>
                       {clash.description && (
-                        <p className="text-amber-900 font-medium mt-1 bg-amber-100/60 p-1.5 rounded">
+                        <p className="text-yellow-900 font-medium mt-1 bg-yellow-100 p-1.5 rounded">
                           ⚠️ {clash.description}
                         </p>
                       )}
@@ -251,17 +251,17 @@ export default function NewProjectPage() {
                 </div>
 
                 {conflictResult.suggested_joint_window && (
-                  <div className="mt-4 pt-3 border-t border-amber-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div className="mt-4 pt-3 border-t border-yellow-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div>
-                      <span className="text-[11px] font-bold uppercase text-amber-900 flex items-center gap-1">
-                        <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                      <span className="text-[11px] font-bold uppercase text-yellow-900 flex items-center gap-1">
+                        <Sparkles className="w-3.5 h-3.5 text-yellow-700" />
                         Suggested Joint Coordination Window:
                       </span>
-                      <p className="text-xs font-semibold text-slate-900 mt-0.5">
+                      <p className="text-xs font-semibold text-gray-900 mt-0.5">
                         {conflictResult.suggested_joint_window.start_date} →{' '}
                         {conflictResult.suggested_joint_window.end_date}
                       </p>
-                      <p className="text-[11px] text-slate-600 mt-0.5">
+                      <p className="text-[11px] text-gray-600 mt-0.5">
                         {conflictResult.suggested_joint_window.recommendation}
                       </p>
                     </div>
@@ -269,7 +269,7 @@ export default function NewProjectPage() {
                     <button
                       type="button"
                       onClick={handleApplyJointWindow}
-                      className="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-lg shadow-sm shrink-0 self-start sm:self-auto transition-colors"
+                      className="px-3 py-1.5 bg-yellow-600 hover:bg-yellow-700 text-white text-xs font-medium rounded shadow-sm shrink-0 self-start sm:self-auto transition-colors"
                     >
                       Align to Joint Window
                     </button>
@@ -281,11 +281,11 @@ export default function NewProjectPage() {
         )}
 
         {/* The Project Form */}
-        <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-slate-200 p-5 sm:p-8 shadow-sm space-y-6">
+        <form onSubmit={handleSubmit} className="bg-white rounded border border-gray-200 p-5 sm:p-8 shadow-sm space-y-6">
           {/* Quick Road Corridor Preset Selector */}
-          <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl">
-            <span className="text-[11px] font-bold uppercase text-slate-500 tracking-wider flex items-center gap-1 mb-2">
-              <MapPin className="w-3.5 h-3.5 text-blue-600" />
+          <div className="p-3 bg-gray-50 border border-gray-200 rounded">
+            <span className="text-[11px] font-bold uppercase text-gray-600 tracking-wider flex items-center gap-1 mb-2">
+              <MapPin className="w-3.5 h-3.5 text-blue-700" />
               Quick Corridor Preset (Test Conflict Detection)
             </span>
             <div className="flex flex-wrap gap-2">
@@ -294,14 +294,14 @@ export default function NewProjectPage() {
                   key={idx}
                   type="button"
                   onClick={() => handleSelectPreset(p)}
-                  className={`text-xs px-2.5 py-1.5 rounded-lg font-medium border text-left transition-all ${
+                  className={`text-xs px-2.5 py-1.5 rounded font-medium border text-left transition-all ${
                     locationName === p.name
-                      ? 'bg-blue-600 text-white border-blue-600'
-                      : 'bg-white text-slate-700 border-slate-200 hover:border-blue-400'
+                      ? 'bg-blue-700 text-white border-blue-700'
+                      : 'bg-white text-gray-700 border-gray-200 hover:border-blue-500'
                   }`}
                 >
                   <div>{p.name}</div>
-                  <div className={`text-[10px] ${locationName === p.name ? 'text-blue-100' : 'text-slate-400'}`}>
+                  <div className={`text-[10px] ${locationName === p.name ? 'text-blue-100' : 'text-gray-500'}`}>
                     {p.clashNote}
                   </div>
                 </button>
@@ -311,8 +311,8 @@ export default function NewProjectPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="sm:col-span-2">
-              <label className="block text-xs font-bold text-slate-700 mb-1">
-                Project Title (What) <span className="text-rose-500">*</span>
+              <label className="block text-xs font-bold text-gray-700 mb-1">
+                Project Title (What) <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -320,13 +320,13 @@ export default function NewProjectPage() {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="e.g. Trunk Water Distribution Conduit Replacement"
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded text-sm text-gray-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-600"
               />
             </div>
 
             <div className="sm:col-span-2">
-              <label className="block text-xs font-bold text-slate-700 mb-1">
-                Purpose & Scope of Work <span className="text-rose-500">*</span>
+              <label className="block text-xs font-bold text-gray-700 mb-1">
+                Purpose & Scope of Work <span className="text-red-500">*</span>
               </label>
               <textarea
                 required
@@ -334,18 +334,18 @@ export default function NewProjectPage() {
                 value={purpose}
                 onChange={(e) => setPurpose(e.target.value)}
                 placeholder="Detail the civic objective, depth of trenching, or road resurfacing specifications..."
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded text-sm text-gray-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-600"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
-                Infrastructure Type <span className="text-rose-500">*</span>
+              <label className="block text-xs font-bold text-gray-700 mb-1">
+                Infrastructure Type <span className="text-red-500">*</span>
               </label>
               <select
                 value={type}
                 onChange={(e) => setType(e.target.value as ProjectType)}
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded text-sm text-gray-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-600"
               >
                 <option value="pipeline">Pipeline (Water / Sewerage / Gas)</option>
                 <option value="road">Road Resurfacing / Pavement</option>
@@ -356,13 +356,13 @@ export default function NewProjectPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
-                Department (Who) <span className="text-rose-500">*</span>
+              <label className="block text-xs font-bold text-gray-700 mb-1">
+                Department (Who) <span className="text-red-500">*</span>
               </label>
               <select
                 value={departmentId}
                 onChange={(e) => setDepartmentId(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded text-sm text-gray-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-600"
               >
                 {departments.map((d) => (
                   <option key={d.id} value={d.id}>
@@ -373,8 +373,8 @@ export default function NewProjectPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
-                Awarded Contractor <span className="text-rose-500">*</span>
+              <label className="block text-xs font-bold text-gray-700 mb-1">
+                Awarded Contractor <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -382,80 +382,80 @@ export default function NewProjectPage() {
                 value={contractor}
                 onChange={(e) => setContractor(e.target.value)}
                 placeholder="e.g. Larsen & Toubro Infra"
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded text-sm text-gray-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-600"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
-                Budget (INR ₹) <span className="text-rose-500">*</span>
+              <label className="block text-xs font-bold text-gray-700 mb-1">
+                Budget (INR ₹) <span className="text-red-500">*</span>
               </label>
               <input
                 type="number"
                 required
                 value={budget}
                 onChange={(e) => setBudget(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded text-sm text-gray-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-600"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
-                Scheduled Start Date (When) <span className="text-rose-500">*</span>
+              <label className="block text-xs font-bold text-gray-700 mb-1">
+                Scheduled Start Date (When) <span className="text-red-500">*</span>
               </label>
               <input
                 type="date"
                 required
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded text-sm text-gray-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-600"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
-                Scheduled End Date <span className="text-rose-500">*</span>
+              <label className="block text-xs font-bold text-gray-700 mb-1">
+                Scheduled End Date <span className="text-red-500">*</span>
               </label>
               <input
                 type="date"
                 required
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded text-sm text-gray-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-600"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
-                Road / Street Location Name <span className="text-rose-500">*</span>
+              <label className="block text-xs font-bold text-gray-700 mb-1">
+                Road / Street Location Name <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
                 required
                 value={locationName}
                 onChange={(e) => setLocationName(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded text-sm text-gray-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-600"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
+              <label className="block text-xs font-bold text-gray-700 mb-1">
                 Ward / Zone
               </label>
               <input
                 type="text"
                 value={ward}
                 onChange={(e) => setWard(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded text-sm text-gray-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-600"
               />
             </div>
           </div>
 
-          <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
+          <div className="pt-4 border-t border-gray-100 flex items-center justify-between">
             <button
               type="button"
               onClick={() => router.push('/dept/dashboard')}
-              className="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-900"
+              className="px-4 py-2 text-xs font-semibold text-gray-600 hover:text-gray-900"
             >
               Cancel
             </button>
@@ -463,7 +463,7 @@ export default function NewProjectPage() {
             <button
               type="submit"
               disabled={submitting}
-              className="inline-flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold rounded-lg shadow-sm transition-all disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-6 py-2.5 bg-blue-700 hover:bg-blue-800 text-white text-xs sm:text-sm font-medium rounded shadow-sm transition-all disabled:opacity-50"
             >
               {submitting ? (
                 <>

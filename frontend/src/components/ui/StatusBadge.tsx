@@ -57,7 +57,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
         <span
           className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold badge-planned ${className}`}
         >
-          <CalendarClock className="w-3.5 h-3.5 text-slate-500" />
+          <CalendarClock className="w-3.5 h-3.5 text-gray-500" />
           <span>Planned</span>
         </span>
       );

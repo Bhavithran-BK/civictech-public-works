@@ -8,8 +8,6 @@ import {
   LayoutDashboard,
   PlusCircle,
   LogOut,
-  MapPin,
-  Building2,
   ShieldCheck,
 } from 'lucide-react';
 
@@ -37,24 +35,24 @@ export const DeptNav: React.FC = () => {
   ];
 
   return (
-    <header className="bg-slate-900 text-white border-b border-slate-800 sticky top-0 z-50">
+    <header className="bg-white text-gray-800 border-b border-gray-200 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-16">
           {/* Brand */}
           <div className="flex items-center gap-3">
             <Link href="/dept/dashboard" className="flex items-center gap-2 group">
-              <div className="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center font-black text-white text-lg tracking-wider group-hover:bg-blue-500 transition-colors shadow-sm">
+              <div className="w-9 h-9 rounded bg-blue-700 flex items-center justify-center font-bold text-white text-lg tracking-wider">
                 DO
               </div>
               <div>
-                <span className="font-extrabold text-base tracking-tight text-white flex items-center gap-1.5">
+                <span className="font-bold text-base tracking-tight text-gray-900 flex items-center gap-1.5">
                   DigOnce
-                  <span className="text-[10px] font-semibold bg-blue-500/20 text-blue-300 px-1.5 py-0.5 rounded border border-blue-400/30">
+                  <span className="text-[10px] font-semibold bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded border border-gray-200">
                     Dept Portal
                   </span>
                 </span>
-                <p className="text-[11px] text-slate-400 font-medium hidden sm:block">
-                  Civic Works Coordination & Conflict Detection
+                <p className="text-[11px] text-gray-500 font-medium hidden sm:block">
+                  Civic Works Coordination
                 </p>
               </div>
             </Link>
@@ -69,10 +67,10 @@ export const DeptNav: React.FC = () => {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-semibold transition-all ${
                     isActive
-                      ? 'bg-blue-600 text-white shadow'
-                      : 'text-slate-300 hover:text-white hover:bg-slate-800'
+                      ? 'bg-blue-50 text-blue-700'
+                      : 'text-gray-600 hover:text-blue-600 hover:bg-gray-50'
                   }`}
                 >
                   <Icon className="w-4 h-4" />
@@ -85,18 +83,18 @@ export const DeptNav: React.FC = () => {
           {/* User Status & Logout */}
           <div className="flex items-center gap-2 sm:gap-4">
             <div className="hidden md:flex flex-col text-right">
-              <span className="text-xs font-semibold text-slate-200 flex items-center gap-1 justify-end">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+              <span className="text-xs font-semibold text-gray-800 flex items-center gap-1 justify-end">
+                <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />
                 {user?.full_name || 'Officer Rajesh (GCC)'}
               </span>
-              <span className="text-[10px] text-slate-400">
+              <span className="text-[10px] text-gray-500">
                 {user?.department_name || 'GCC - Roads & Bridges'}
               </span>
             </div>
 
             <button
               onClick={handleLogout}
-              className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs text-slate-400 hover:text-rose-300 hover:bg-rose-950/40 rounded-lg transition-colors border border-slate-700 hover:border-rose-900"
+              className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded transition-colors border border-gray-200"
               title="Sign Out"
             >
               <LogOut className="w-3.5 h-3.5" />
