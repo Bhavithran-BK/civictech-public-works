@@ -223,7 +223,7 @@ export default function NewProjectPage() {
                 </div>
 
                 <div className="mt-3 space-y-2">
-                  {conflictResult.conflicting_projects.map((clash, idx) => (
+                  {conflictResult.conflicting_projects.map((clash: any, idx: number) => (
                     <div
                       key={idx}
                       className="bg-white p-3 rounded border border-yellow-200 text-xs text-gray-800"

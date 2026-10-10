@@ -56,7 +56,7 @@ export default function DeptDashboardPage() {
     const matchesSearch =
       searchQuery === '' ||
       p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      p.location_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      ((p.location_name || p.roadName)?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) ||
       p.contractor.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesStatus && matchesSearch;
   });

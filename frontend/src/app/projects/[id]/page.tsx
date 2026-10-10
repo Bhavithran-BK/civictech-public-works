@@ -46,7 +46,7 @@ function ProjectDetailContent() {
     const p = await fetchProjectById(projectId);
     if (p) {
       setProject(p);
-      setNewEndDate(p.plannedEndDate);
+      setNewEndDate(p.plannedEndDate || p.end_date || '');
       const publicUrl = typeof window !== 'undefined' ? window.location.href : `https://digonce.gov.in/projects/${projectId}`;
       QRCode.toDataURL(publicUrl, { width: 220, margin: 1 })
         .then((url: string) => setQrDataUrl(url))
@@ -154,13 +154,13 @@ function ProjectDetailContent() {
             <div>
               <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Sanctioned Budget</span>
               <span className="text-xs font-bold text-slate-900 mt-0.5 block">
-                ₹{(project.budgetInr / 100000).toFixed(1)} Lakhs
+                ₹{(((project.budgetInr || project.budget || 0)) / 100000).toFixed(1)} Lakhs
               </span>
             </div>
             <div>
               <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Target Completion Date</span>
               <span className="text-xs font-extrabold text-blue-800 mt-0.5 block">
-                {project.plannedEndDate}
+                {project.plannedEndDate || project.end_date}
               </span>
             </div>
           </div>
@@ -182,10 +182,10 @@ function ProjectDetailContent() {
               </div>
               <div className="text-right">
                 <span className="text-2xl font-black text-slate-900 tabular-nums">
-                  {project.healthScore}%
+                  {project.healthScore ?? project.health_score ?? 100}%
                 </span>
                 <div className="mt-1">
-                  <HealthScoreMeter score={project.healthScore} showText={false} />
+                  <HealthScoreMeter score={project.healthScore ?? project.health_score ?? 100} showText={false} />
                 </div>
               </div>
             </div>
@@ -201,7 +201,7 @@ function ProjectDetailContent() {
                   {project.conflicts[0].suggestedAction}
                 </p>
                 <div className="text-[11px] font-bold text-amber-950 pt-1">
-                  Estimated Avoidable Municipal Repaving Cost: ₹{(project.conflicts[0].estimatedAvoidableCostInr / 100000).toFixed(1)} Lakhs
+                  Estimated Avoidable Municipal Repaving Cost: ₹{(((project.conflicts[0].estimatedAvoidableCostInr ?? 0)) / 100000).toFixed(1)} Lakhs
                 </div>
               </div>
             )}

@@ -50,16 +50,16 @@ function EditProjectContent() {
     setLoading(true);
     api
       .getProjectById(projectId)
-      .then((data) => {
+      .then((data: any) => {
         if (data) {
           setProject(data);
           setTitle(data.title);
           setPurpose(data.purpose);
           setContractor(data.contractor);
-          setBudget(data.budget.toString());
+          setBudget((data.budget || data.budgetInr || 0).toString());
           setStatus(data.status);
-          setEndDate(data.end_date);
-          setOriginalEndDate(data.original_end_date);
+          setEndDate(data.end_date || data.plannedEndDate || '');
+          setOriginalEndDate(data.original_end_date || data.plannedEndDate || '');
           setDelayReason(data.latest_delay_reason || '');
         }
       })
@@ -69,7 +69,8 @@ function EditProjectContent() {
   // Track if officer has moved the end date beyond the recorded end date
   useEffect(() => {
     if (project && endDate) {
-      if (new Date(endDate) > new Date(project.end_date)) {
+      const pEndDate = project.end_date || project.plannedEndDate;
+      if (pEndDate && new Date(endDate) > new Date(pEndDate)) {
         setIsExtendingDate(true);
       } else {
         setIsExtendingDate(false);
@@ -103,7 +104,7 @@ function EditProjectContent() {
         title,
         purpose,
         contractor,
-        budget: parseFloat(budget) || project?.budget || 0,
+        budget: parseFloat(budget) || project?.budget || project?.budgetInr || 0,
         status: isExtendingDate ? 'delayed' : status,
       });
 
@@ -157,10 +158,10 @@ function EditProjectContent() {
               Update Project & Log Delays
             </h1>
             <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
-              {project.location_name} • {project.department_name}
+              {(project.location_name || project.roadName)} • {(project.department_name || project.departmentName)}
             </p>
           </div>
-          <StatusBadge status={project.status} healthScore={project.health_score} />
+          <StatusBadge status={project.status} healthScore={project.health_score ?? project.healthScore} />
         </div>
 
         {errorMessage && (

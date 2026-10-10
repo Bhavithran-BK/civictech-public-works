@@ -61,9 +61,9 @@ export default function CitizenPortalPage() {
     return projects.filter((p) => {
       const matchesSearch =
         p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.referenceCode.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.roadName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.departmentName.toLowerCase().includes(searchQuery.toLowerCase());
+        (p.referenceCode?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) ||
+        ((p.roadName || p.location_name)?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) ||
+        ((p.departmentName || p.department_name)?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false);
 
       return matchesSearch;
     });

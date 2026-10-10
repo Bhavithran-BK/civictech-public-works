@@ -71,7 +71,7 @@ export const ReportModal: React.FC<ReportModalProps> = ({
       setSuccessResult({
         status: res.status,
         health: res.newHealthScore,
-        distance: res.report.distanceMeters,
+        distance: res.report.distanceMeters ?? res.report.distance_m ?? 0,
         verified: res.report.verified
       });
 
