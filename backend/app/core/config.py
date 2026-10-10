@@ -23,6 +23,10 @@ class Settings(BaseSettings):
     RECENT_DIG_LOOKBACK_DAYS: int = 90
     AVOIDABLE_COST_PERCENTAGE: float = 0.35
 
+    # Email Service (Resend)
+    RESEND_API_KEY: str = ""
+    RESEND_FROM_EMAIL: str = "onboarding@resend.dev"
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",

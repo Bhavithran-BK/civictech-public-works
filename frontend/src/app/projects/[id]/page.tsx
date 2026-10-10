@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { fetchProjectById, postProjectDelay } from '@/lib/api';
-import { Project } from '@/lib/types';
+import { api, fetchProjectById, postProjectDelay, postProjectSubscribe } from '@/lib/api';
+import { Project, User as UserType } from '@/lib/types';
 import { StatusBadge, HealthScoreMeter, WorkTypeIcon } from '@/components/ui/Badges';
 import { ReportModal } from '@/components/project/ReportModal';
 import { 
@@ -33,6 +33,7 @@ function ProjectDetailContent() {
   const projectId = params?.id as string;
 
   const [project, setProject] = useState<Project | null>(null);
+  const [currentUser, setCurrentUser] = useState<UserType | null>(null);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [qrDataUrl, setQrDataUrl] = useState<string>('');
   const [showDelayModal, setShowDelayModal] = useState(false);
@@ -56,6 +57,7 @@ function ProjectDetailContent() {
 
   useEffect(() => {
     loadProject();
+    setCurrentUser(api.getCurrentUser());
   }, [loadProject]);
 
   if (!project) {
@@ -76,11 +78,12 @@ function ProjectDetailContent() {
       const res = await postProjectDelay(project.id, {
         reason: delayReason,
         newEndDate,
-        officerName
+        officerName: currentUser?.full_name || officerName,
       });
       setProject({ ...res.project });
       setShowDelayModal(false);
       setDelayReason('');
+      alert('Official project extension notice posted successfully!');
     } catch (err: any) {
       alert(err.message);
     }
@@ -103,6 +106,17 @@ function ProjectDetailContent() {
               className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 shadow-2xs"
             >
               <Printer className="w-3.5 h-3.5" /> Print Dossier
+            </button>
+            <button
+              onClick={() => {
+                const email = prompt('Enter your email to subscribe to updates:');
+                if (email) {
+                  postProjectSubscribe(project.id, email).then(() => alert('Subscribed successfully!')).catch(e => alert(e.message));
+                }
+              }}
+              className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 shadow-2xs"
+            >
+              <Share2 className="w-3.5 h-3.5" /> Subscribe
             </button>
             <button
               onClick={() => setIsReportModalOpen(true)}
@@ -379,6 +393,43 @@ function ProjectDetailContent() {
             <h3 className="text-sm font-bold text-slate-900">
               Log Mandatory Delay Extension Notice
             </h3>
+
+            {!currentUser && (
+              <div className="bg-amber-50 border border-amber-300 rounded p-2.5 text-xs text-amber-900 space-y-1.5">
+                <div className="flex items-center gap-1.5 font-bold text-amber-950">
+                  <ShieldCheck className="w-4 h-4 text-amber-700" />
+                  Officer Login Required
+                </div>
+                <p className="text-[11px] text-amber-800 leading-normal">
+                  Per municipal governance rules, project schedule extensions must be filed by an authenticated department officer.
+                </p>
+                <div className="flex items-center gap-2 pt-0.5">
+                  <Link
+                    href="/dept/login"
+                    className="font-bold underline text-blue-700 hover:text-blue-800 text-[11px]"
+                  >
+                    Go to Officer Login
+                  </Link>
+                  <span className="text-slate-400">·</span>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      try {
+                        await api.login('officer.roads@cityworks.gov', 'admin123');
+                        setCurrentUser(api.getCurrentUser());
+                        alert('Authenticated as Demo Officer (K. Rajesh, GCC Roads)');
+                      } catch (err: any) {
+                        alert(err.message);
+                      }
+                    }}
+                    className="font-bold text-emerald-700 hover:text-emerald-800 underline text-[11px]"
+                  >
+                    1-Click Demo Login
+                  </button>
+                </div>
+              </div>
+            )}
+
             <form onSubmit={handleDelaySubmit} className="space-y-3">
               <div>
                 <label className="text-[11px] font-bold text-slate-600 uppercase block mb-1">

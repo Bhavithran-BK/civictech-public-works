@@ -1,9 +1,10 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
+import { User } from '@/lib/types';
 import {
   LayoutDashboard,
   PlusCircle,
@@ -14,7 +15,13 @@ import {
 export const DeptNav: React.FC = () => {
   const pathname = usePathname();
   const router = useRouter();
-  const user = api.getCurrentUser();
+  const [user, setUser] = useState<User | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setUser(api.getCurrentUser());
+    setMounted(true);
+  }, []);
 
   const handleLogout = () => {
     api.logout();
@@ -85,10 +92,10 @@ export const DeptNav: React.FC = () => {
             <div className="hidden md:flex flex-col text-right">
               <span className="text-xs font-semibold text-gray-800 flex items-center gap-1 justify-end">
                 <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />
-                {user?.full_name || 'Officer Rajesh (GCC)'}
+                {mounted ? (user?.full_name || 'Officer Rajesh (GCC)') : 'Officer Rajesh (GCC)'}
               </span>
               <span className="text-[10px] text-gray-500">
-                {user?.department_name || 'GCC - Roads & Bridges'}
+                {mounted ? (user?.department_name || 'GCC - Roads & Bridges') : 'GCC - Roads & Bridges'}
               </span>
             </div>
 

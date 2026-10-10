@@ -191,20 +191,52 @@ export async function postProjectDelay(
   delay: {
     reason: string;
     newEndDate: string;
-    officerName: string;
+    officerName?: string;
   }
 ): Promise<{ success: boolean; project: Project }> {
+  const authHeader = getAuthHeader();
+  if (!authHeader.Authorization) {
+    throw new Error('Officer login required: Only authenticated Department Officers can log delay extensions. Please log in at /dept/login');
+  }
+
   const res = await fetch(`${BASE_URL}/projects/${projectId}/delays`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(delay),
+    headers: {
+      'Content-Type': 'application/json',
+      ...authHeader,
+    },
+    body: JSON.stringify({
+      reason: delay.reason,
+      new_end_date: delay.newEndDate,
+    }),
   });
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    throw new Error(err.detail || 'Failed to log delay');
+    const errorMsg =
+      err.error?.message ||
+      err.detail ||
+      err.message ||
+      (res.status === 401 ? 'Unauthorized: Please log in as an officer' : 'Failed to log delay');
+    throw new Error(errorMsg);
   }
 
+  const data = await res.json();
+  const rawProject = data.project || data;
+  return { success: true, project: normalizeProject(rawProject) };
+}
+
+export async function postProjectSubscribe(projectId: string, email: string): Promise<{ message: string }> {
+  const res = await fetch(`${BASE_URL}/projects/${projectId}/subscribe`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || 'Failed to subscribe to project');
+  }
   return await res.json();
 }
 
@@ -560,6 +592,14 @@ export const api = {
   },
 
   async getDepartments(): Promise<Department[]> {
+    try {
+      const res = await fetch(`${BASE_URL}/departments`);
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {
+      // Fallback
+    }
     return MOCK_DEPARTMENTS;
   },
 };

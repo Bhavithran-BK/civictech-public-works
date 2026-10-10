@@ -113,7 +113,7 @@ export function normalizeProject(raw: any): Project {
     unresolvedReportsCount: raw.unresolvedReportsCount ?? 0,
     delays: Array.isArray(raw.delays) ? raw.delays : [],
     updates: Array.isArray(raw.updates) ? raw.updates : [],
-    citizenReports: Array.isArray(raw.citizenReports) ? raw.citizenReports : [],
+    citizenReports: Array.isArray(raw.citizenReports) ? raw.citizenReports : (Array.isArray(raw.reports) ? raw.reports : []),
     conflicts: Array.isArray(raw.conflicts) ? raw.conflicts : [],
     latest_delay_reason: raw.latest_delay_reason || (raw.delays?.[0]?.reason ?? null),
   };
