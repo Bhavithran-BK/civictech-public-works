@@ -82,14 +82,14 @@ export default function NewProjectPage() {
   const [title, setTitle] = useState('');
   const [purpose, setPurpose] = useState('');
   const [type, setType] = useState<ProjectType>('pipeline');
-  const [departmentId, setDepartmentId] = useState('dept-02');
+  const [departmentId, setDepartmentId] = useState('dept-01');
   const [contractor, setContractor] = useState('');
-  const [budget, setBudget] = useState('25000000');
-  const [startDate, setStartDate] = useState('2026-10-28');
-  const [endDate, setEndDate] = useState('2026-12-15');
-  const [locationName, setLocationName] = useState(ROAD_PRESETS[0].name);
-  const [ward, setWard] = useState(ROAD_PRESETS[0].ward);
-  const [coordinates, setCoordinates] = useState<[number, number][]>(ROAD_PRESETS[0].coords);
+  const [budget, setBudget] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [locationName, setLocationName] = useState('');
+  const [ward, setWard] = useState('');
+  const [coordinates, setCoordinates] = useState<[number, number][]>([]);
   const [corridorMode, setCorridorMode] = useState<'map' | 'presets'>('map');
 
   // Live Conflict State
@@ -101,7 +101,23 @@ export default function NewProjectPage() {
   const [formError, setFormError] = useState<string | null>(null);
 
   useEffect(() => {
-    api.getDepartments().then(setDepartments);
+    const s = new Date();
+    s.setDate(s.getDate() + 7);
+    setStartDate(s.toISOString().slice(0, 10));
+
+    const e = new Date();
+    e.setDate(e.getDate() + 60);
+    setEndDate(e.toISOString().slice(0, 10));
+
+    api.getDepartments().then((depts) => {
+      setDepartments(depts);
+      const user = api.getCurrentUser();
+      if (user?.department_id) {
+        setDepartmentId(user.department_id);
+      } else if (depts.length > 0) {
+        setDepartmentId(depts[0].id);
+      }
+    });
   }, []);
 
   // Run live conflict check on date / geometry changes

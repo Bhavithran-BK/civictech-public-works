@@ -8,7 +8,10 @@ import threading
 from typing import Any, Dict, List, Optional, Tuple
 import uuid
 
-from app.services.conflict_engine import check_spatial_temporal_conflicts
+from app.services.conflict_engine import (
+    check_spatial_temporal_conflicts,
+    compute_systemwide_conflicts_and_savings,
+)
 from app.services.health_score import calculate_health_score
 
 _LOCK = threading.Lock()
@@ -547,14 +550,17 @@ class DatabaseStore:
                         except Exception:
                             pass
 
+            # Dynamically calculate inter-department spatio-temporal clashes and duplicate-dig savings
+            clash_count, total_savings = compute_systemwide_conflicts_and_savings(projects)
+
             return {
                 "total_projects": len(projects),
                 "status_counts": counts,
                 "overdue_projects_count": len(overdue_projects),
                 "open_reports_count": total_open_reports,
                 "unresponsive_reports_72h": unresponsive_72h,
-                "duplicate_dig_savings_est_inr": 48500000.0,
-                "recent_conflicts_prevented": 7,
+                "duplicate_dig_savings_est_inr": total_savings,
+                "recent_conflicts_prevented": clash_count,
                 "overdue_projects": overdue_projects,
             }
 

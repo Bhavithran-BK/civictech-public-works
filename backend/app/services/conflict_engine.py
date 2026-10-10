@@ -255,3 +255,78 @@ def check_spatial_temporal_conflicts(
         conflicting_projects=clashing_projects,
         suggested_joint_window=joint_window,
     )
+
+
+def compute_systemwide_conflicts_and_savings(
+    projects: List[Dict[str, Any]],
+    buffer_meters: float = 50.0,
+    lookback_days: int = 90,
+    avoidable_cost_pct: float = 0.35,
+) -> Tuple[int, float]:
+    """
+    Dynamically computes actual system-wide clashes across all municipal projects in the database
+    and calculates the real cumulative duplicate-digging cost savings (in INR).
+    """
+    clash_count = 0
+    total_savings = 0.0
+    seen_pairs = set()
+
+    for i in range(len(projects)):
+        p1 = projects[i]
+        c1 = p1.get("coordinates") or p1.get("corridorPath") or []
+        if len(c1) < 2:
+            continue
+        d1 = p1.get("department_id") or p1.get("departmentId")
+        s1_str = p1.get("start_date") or p1.get("startDate")
+        e1_str = p1.get("end_date") or p1.get("plannedEndDate")
+        if not s1_str or not e1_str:
+            continue
+        try:
+            s1_dt = datetime.strptime(str(s1_str)[:10], "%Y-%m-%d").date()
+            e1_dt = datetime.strptime(str(e1_str)[:10], "%Y-%m-%d").date()
+        except Exception:
+            continue
+
+        for j in range(i + 1, len(projects)):
+            p2 = projects[j]
+            d2 = p2.get("department_id") or p2.get("departmentId")
+            if d1 and d2 and d1 == d2:
+                continue  # Intra-department works do not constitute multi-agency duplicate excavation clashes
+
+            c2 = p2.get("coordinates") or p2.get("corridorPath") or []
+            if len(c2) < 2:
+                continue
+            s2_str = p2.get("start_date") or p2.get("startDate")
+            e2_str = p2.get("end_date") or p2.get("plannedEndDate")
+            if not s2_str or not e2_str:
+                continue
+            try:
+                s2_dt = datetime.strptime(str(s2_str)[:10], "%Y-%m-%d").date()
+                e2_dt = datetime.strptime(str(e2_str)[:10], "%Y-%m-%d").date()
+            except Exception:
+                continue
+
+            # Temporal condition: active schedule overlap OR moratorium violation within lookback window
+            is_overlap = (s1_dt <= e2_dt) and (e1_dt >= s2_dt)
+            is_moratorium = (
+                ((s2_dt > e1_dt) and ((s2_dt - e1_dt).days <= lookback_days)) or
+                ((s1_dt > e2_dt) and ((s1_dt - e2_dt).days <= lookback_days))
+            )
+
+            if not (is_overlap or is_moratorium):
+                continue
+
+            # Spatio-geodetic distance check
+            dist = calculate_linestring_distance_meters(c1, c2)
+            if dist <= buffer_meters:
+                pair_key = tuple(sorted([str(p1.get("id", i)), str(p2.get("id", j))]))
+                if pair_key not in seen_pairs:
+                    seen_pairs.add(pair_key)
+                    clash_count += 1
+                    b1 = float(p1.get("budget") or p1.get("budgetInr") or 0.0)
+                    b2 = float(p2.get("budget") or p2.get("budgetInr") or 0.0)
+                    clash_budget = min(b1, b2) if (b1 > 0 and b2 > 0) else max(b1, b2)
+                    total_savings += round(clash_budget * avoidable_cost_pct, 2)
+
+    return clash_count, round(total_savings, 2)
+

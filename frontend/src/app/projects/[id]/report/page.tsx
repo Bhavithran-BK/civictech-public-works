@@ -19,6 +19,7 @@ function ReportContent() {
   const [reporterHandle, setReporterHandle] = useState('');
   const [gpsLocation, setGpsLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [isLocating, setIsLocating] = useState(false);
+  const [locationError, setLocationError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [result, setResult] = useState<{ success: boolean; message: string; verified: boolean } | null>(null);
 
@@ -32,31 +33,30 @@ function ReportContent() {
 
   const handleAcquireLocation = () => {
     setIsLocating(true);
+    setLocationError(null);
     if ('geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
           setGpsLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
           setIsLocating(false);
         },
-        () => {
-          // Fallback simulation near project coordinates
-          if (project) {
-            const [pLat, pLng] = getProjectPoint(project);
-            setGpsLocation({
-              lat: pLat + (Math.random() - 0.5) * 0.001,
-              lng: pLng + (Math.random() - 0.5) * 0.001
-            });
-          }
+        (err) => {
           setIsLocating(false);
+          let msg = 'Failed to acquire device GPS coordinates.';
+          if (err.code === err.PERMISSION_DENIED) {
+            msg = 'GPS Permission Denied: Please allow location access in your browser to verify on-site presence.';
+          } else if (err.code === err.POSITION_UNAVAILABLE) {
+            msg = 'GPS Position Unavailable: Location sensors are offline.';
+          } else if (err.code === err.TIMEOUT) {
+            msg = 'GPS Request Timed Out. Please retry.';
+          }
+          setLocationError(msg);
         },
-        { enableHighAccuracy: true, timeout: 6000 }
+        { enableHighAccuracy: true, timeout: 10000 }
       );
     } else {
-      if (project) {
-        const [pLat, pLng] = getProjectPoint(project);
-        setGpsLocation({ lat: pLat, lng: pLng });
-      }
       setIsLocating(false);
+      setLocationError('Geolocation is not supported by your browser.');
     }
   };
 
@@ -64,10 +64,14 @@ function ReportContent() {
     e.preventDefault();
     if (!project || !description.trim()) return;
 
+    if (!gpsLocation) {
+      setLocationError('Please tap "Get GPS" to acquire device coordinates for spatial audit verification.');
+      return;
+    }
+
     setIsSubmitting(true);
-    const [pLat, pLng] = getProjectPoint(project);
-    const lat = gpsLocation?.lat ?? pLat;
-    const lng = gpsLocation?.lng ?? pLng;
+    const lat = gpsLocation.lat;
+    const lng = gpsLocation.lng;
 
     try {
       const res = await postCitizenReport(project.id, {
@@ -96,7 +100,7 @@ function ReportContent() {
       }, 2000);
     } catch (err: any) {
       console.error('Error recording citizen report:', err);
-      alert(err?.message || 'Error recording citizen report.');
+      setLocationError(err?.message || 'Error recording citizen report.');
       setIsSubmitting(false);
     }
   };
@@ -145,6 +149,12 @@ function ReportContent() {
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
+              {locationError && (
+                <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded flex items-start gap-2">
+                  <AlertTriangle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
+                  <span>{locationError}</span>
+                </div>
+              )}
               <div>
                 <label className="text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 block mb-2">
                   What did you observe on site?

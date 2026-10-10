@@ -114,75 +114,35 @@ export async function postCitizenReport(
     reporterHandle: string;
   }
 ): Promise<{ success: boolean; report: CitizenReport; newHealthScore: number; status: Project['status'] }> {
-  try {
-    const res = await fetch(`${BASE_URL}/projects/${projectId}/reports`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(report),
-    });
+  const res = await fetch(`${BASE_URL}/projects/${projectId}/reports`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(report),
+  });
 
-    if (res.ok) {
-      const data = await res.json();
-      const reportObj = data.report || data;
-      const distance = reportObj.distanceMeters ?? reportObj.distance_m ?? 0;
-      const verified = reportObj.verified ?? true;
-      const newHealthScore = data.newHealthScore ?? data.new_health_score ?? data.health_score ?? 85;
-      const status = data.status || 'on_track';
-
-      return {
-        success: true,
-        report: {
-          ...reportObj,
-          distanceMeters: distance,
-          distance_m: distance,
-          verified,
-        },
-        newHealthScore,
-        status,
-      };
-    }
-  } catch (err) {
-    console.warn('Backend unavailable, saving report locally:', err);
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    const message = err.error?.message || err.detail || err.message || 'Failed to record citizen audit report';
+    throw new Error(message);
   }
 
-  // Graceful local offline fallback
-  const p = localProjects.find((x) => x.id === projectId);
-  const minDistance = 28;
-  const mockReport: CitizenReport = {
-    id: `rep-${Date.now()}`,
-    projectId,
-    project_id: projectId,
-    kind: report.kind as ReportKind,
-    reportedLat: report.reportedLat,
-    reportedLng: report.reportedLng,
-    lat: report.reportedLat,
-    lng: report.reportedLng,
-    notes: report.description,
-    description: report.description,
-    verified: true,
-    distanceMeters: minDistance,
-    distance_m: minDistance,
-    createdAt: new Date().toISOString(),
-    created_at: new Date().toISOString(),
-    reporterHandle: report.reporterHandle || 'Resident Citizen',
-  };
-
-  const newScore = p ? Math.max(15, (p.health_score ?? p.healthScore ?? 85) - (report.kind === 'progress_verified' ? -5 : 12)) : 80;
-  const newStatus = (report.kind === 'no_activity' ? 'stalled' : report.kind === 'safety_hazard' ? 'at_risk' : p?.status || 'on_track') as Project['status'];
-
-  if (p) {
-    p.healthScore = newScore;
-    p.health_score = newScore;
-    p.status = newStatus;
-    if (!p.citizenReports) p.citizenReports = [];
-    p.citizenReports.unshift(mockReport);
-  }
+  const data = await res.json();
+  const reportObj = data.report || data;
+  const distance = reportObj.distanceMeters ?? reportObj.distance_m ?? 0;
+  const verified = reportObj.verified ?? true;
+  const newHealthScore = data.newHealthScore ?? data.new_health_score ?? data.health_score ?? 85;
+  const status = data.status || 'on_track';
 
   return {
     success: true,
-    report: mockReport,
-    newHealthScore: newScore,
-    status: newStatus,
+    report: {
+      ...reportObj,
+      distanceMeters: distance,
+      distance_m: distance,
+      verified,
+    },
+    newHealthScore,
+    status,
   };
 }
 
@@ -247,40 +207,40 @@ export async function postProjectSubscribe(projectId: string, email: string): Pr
 export const api = {
   // Authentication
   async login(email: string, password: string): Promise<{ access_token: string; user: User }> {
-    try {
-      const res = await fetch(`${BASE_URL}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-      if (res.ok) {
-        const data = await res.json();
-        if (typeof window !== 'undefined' && data.access_token) {
-          localStorage.setItem('digonce_token', data.access_token);
-        }
-        return data;
-      }
-    } catch {
-      // Fallback open access for demo if backend isn't up
+    const res = await fetch(`${BASE_URL}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      const msg = err.error?.message || err.detail || 'Authentication failed: Invalid credentials';
+      throw new Error(msg);
     }
 
-    const mockToken = `jwt-demo-${Date.now()}`;
+    const data = await res.json();
     if (typeof window !== 'undefined') {
-      localStorage.setItem('digonce_token', mockToken);
+      if (data.access_token) {
+        localStorage.setItem('digonce_token', data.access_token);
+      }
+      if (data.user) {
+        localStorage.setItem('digonce_user', JSON.stringify(data.user));
+      }
     }
-    return {
-      access_token: mockToken,
-      user: {
-        ...MOCK_USER,
-        email: email || MOCK_USER.email,
-      },
-    };
+    return data;
   },
 
   getCurrentUser(): User | null {
     if (typeof window !== 'undefined') {
-      const token = localStorage.getItem('digonce_token');
-      if (token) return MOCK_USER;
+      const stored = localStorage.getItem('digonce_user');
+      if (stored) {
+        try {
+          return JSON.parse(stored);
+        } catch {
+          // invalid stored json
+        }
+      }
     }
     return null;
   },
@@ -288,40 +248,20 @@ export const api = {
   logout(): void {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('digonce_token');
+      localStorage.removeItem('digonce_user');
     }
   },
 
   // Dashboard Metrics
   async getDashboardSummary(): Promise<DashboardSummary> {
-    try {
-      const res = await fetch(`${BASE_URL}/dashboard/summary`, {
-        headers: getAuthHeader(),
-      });
-      if (res.ok) {
-        return await res.json();
-      }
-    } catch {
-      // Fallback to local computation
+    const res = await fetch(`${BASE_URL}/dashboard/summary`, {
+      headers: getAuthHeader(),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || err.error?.message || 'Failed to fetch dashboard metrics');
     }
-
-    const counts = {
-      on_track: localProjects.filter((p) => p.status === 'on_track').length,
-      at_risk: localProjects.filter((p) => p.status === 'at_risk').length,
-      delayed: localProjects.filter((p) => p.status === 'delayed').length,
-      planned: localProjects.filter((p) => p.status === 'planned').length,
-      completed: localProjects.filter((p) => p.status === 'completed').length,
-      stalled: localProjects.filter((p) => p.status === 'stalled').length,
-    };
-
-    const overdue = localProjects.filter((p) => p.status === 'delayed' || p.status === 'stalled');
-
-    return {
-      ...MOCK_DASHBOARD_SUMMARY,
-      total_projects: localProjects.length,
-      status_counts: counts,
-      overdue_projects_count: overdue.length,
-      overdue_projects: overdue,
-    };
+    return await res.json();
   },
 
   // Projects

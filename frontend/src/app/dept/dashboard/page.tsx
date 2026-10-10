@@ -108,12 +108,12 @@ export default function DeptDashboardPage() {
               </div>
             </div>
             <div className="mt-2">
-              <span className="text-xl sm:text-2xl font-bold tracking-tight text-gray-900">
-                ₹{((summary?.duplicate_dig_savings_est_inr || 48500000) / 10000000).toFixed(2)} Cr
+              <span className="text-xl sm:sm:text-2xl font-bold tracking-tight text-gray-900">
+                ₹{(((summary?.duplicate_dig_savings_est_inr ?? 0)) / 10000000).toFixed(2)} Cr
               </span>
               <p className="text-[11px] text-green-700 mt-1 flex items-center gap-1 font-medium">
                 <TrendingDown className="w-3 h-3" />
-                <span>{summary?.recent_conflicts_prevented || 7} road tears avoided</span>
+                <span>{summary?.recent_conflicts_prevented ?? 0} inter-agency clashes prevented</span>
               </p>
             </div>
           </div>

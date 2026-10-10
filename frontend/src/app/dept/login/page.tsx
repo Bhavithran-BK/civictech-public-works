@@ -14,8 +14,8 @@ import {
 
 export default function DeptLoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState('officer.roads@cityworks.gov');
-  const [password, setPassword] = useState('CityWorks2026!');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -134,19 +134,63 @@ export default function DeptLoginPage() {
             </button>
           </form>
 
-          {/* Quick Demo Credentials Banner */}
-          <div className="mt-6 pt-5 border-t border-gray-200">
-            <div className="bg-blue-50 rounded p-3 border border-blue-100">
-              <div className="flex items-center gap-2 text-xs font-semibold text-blue-800 mb-1">
-                <KeyRound className="w-3.5 h-3.5" />
-                <span>Demo Judge Credentials</span>
-              </div>
-              <p className="text-[11px] text-gray-600">
-                Email: <span className="text-gray-800 font-mono">officer.roads@cityworks.gov</span>
-              </p>
-              <p className="text-[11px] text-gray-600">
-                Password: <span className="text-gray-800 font-mono">CityWorks2026!</span>
-              </p>
+          {/* Municipal Directory Quick Fill for Testing */}
+          <div className="mt-6 pt-5 border-t border-gray-200 space-y-2">
+            <div className="flex items-center gap-1.5 text-xs font-bold text-gray-700">
+              <KeyRound className="w-3.5 h-3.5 text-blue-700" />
+              <span>Municipal Officer Directory (Click to Populate):</span>
+            </div>
+            <div className="space-y-1.5">
+              <button
+                type="button"
+                onClick={() => {
+                  setEmail('officer.roads@cityworks.gov');
+                  setPassword('CityWorks2026!');
+                }}
+                className="w-full text-left p-2 rounded bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-300 text-xs transition-colors flex items-center justify-between"
+              >
+                <div>
+                  <strong className="text-slate-900 block">Roads Executive Engineer (GCC)</strong>
+                  <span className="text-[11px] text-slate-500 font-mono">officer.roads@cityworks.gov</span>
+                </div>
+                <span className="text-[10px] bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded font-semibold">
+                  Fill
+                </span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setEmail('waterworks@cmwssb.tn.gov.in');
+                  setPassword('MetroWater2026!');
+                }}
+                className="w-full text-left p-2 rounded bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-300 text-xs transition-colors flex items-center justify-between"
+              >
+                <div>
+                  <strong className="text-slate-900 block">Water Board Engineer (CMWSSB)</strong>
+                  <span className="text-[11px] text-slate-500 font-mono">waterworks@cmwssb.tn.gov.in</span>
+                </div>
+                <span className="text-[10px] bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded font-semibold">
+                  Fill
+                </span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setEmail('admin@cityworks.gov');
+                  setPassword('CityWorks2026!');
+                }}
+                className="w-full text-left p-2 rounded bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-300 text-xs transition-colors flex items-center justify-between"
+              >
+                <div>
+                  <strong className="text-slate-900 block">Joint Commissioner (City Admin)</strong>
+                  <span className="text-[11px] text-slate-500 font-mono">admin@cityworks.gov</span>
+                </div>
+                <span className="text-[10px] bg-purple-100 text-purple-800 px-1.5 py-0.5 rounded font-semibold">
+                  Admin Fill
+                </span>
+              </button>
             </div>
           </div>
         </div>
