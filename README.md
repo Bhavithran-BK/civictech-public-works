@@ -191,8 +191,3 @@ Open `http://localhost:3000` in your browser.
   * Automated contractor penalty scorecards tied to tender evaluations.
 
 ---
-
-## 👥 Contributors
-
-* **Bhavithran B K** & Team — CivicTech Public Works Coordination Initiative
-* Built with pride for urban accountability and smarter city governance.
