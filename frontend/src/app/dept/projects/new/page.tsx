@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { ConflictCheckResult, Department, ProjectType } from '@/lib/types';
@@ -19,7 +20,18 @@ import {
   ShieldAlert,
   Loader2,
   Info,
+  Navigation,
+  Compass,
 } from 'lucide-react';
+
+const CorridorPlotter = dynamic(() => import('@/components/map/CorridorPlotter'), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-[320px] bg-slate-100 rounded-lg flex items-center justify-center text-xs text-slate-500 font-medium">
+      Loading OpenStreetMap Corridor Studio...
+    </div>
+  ),
+});
 
 const ROAD_PRESETS = [
   {
@@ -78,6 +90,7 @@ export default function NewProjectPage() {
   const [locationName, setLocationName] = useState(ROAD_PRESETS[0].name);
   const [ward, setWard] = useState(ROAD_PRESETS[0].ward);
   const [coordinates, setCoordinates] = useState<[number, number][]>(ROAD_PRESETS[0].coords);
+  const [corridorMode, setCorridorMode] = useState<'map' | 'presets'>('map');
 
   // Live Conflict State
   const [checkingConflict, setCheckingConflict] = useState(false);
@@ -151,6 +164,11 @@ export default function NewProjectPage() {
 
     if (!title.trim() || !purpose.trim() || !contractor.trim()) {
       setFormError('Please complete all mandatory project fields.');
+      return;
+    }
+
+    if (coordinates.length < 2) {
+      setFormError('Please plot at least 2 points on the interactive map to define the road corridor.');
       return;
     }
 
@@ -282,31 +300,96 @@ export default function NewProjectPage() {
 
         {/* The Project Form */}
         <form onSubmit={handleSubmit} className="bg-white rounded border border-gray-200 p-5 sm:p-8 shadow-sm space-y-6">
-          {/* Quick Road Corridor Preset Selector */}
-          <div className="p-3 bg-gray-50 border border-gray-200 rounded">
-            <span className="text-[11px] font-bold uppercase text-gray-600 tracking-wider flex items-center gap-1 mb-2">
-              <MapPin className="w-3.5 h-3.5 text-blue-700" />
-              Quick Corridor Preset (Test Conflict Detection)
-            </span>
-            <div className="flex flex-wrap gap-2">
-              {ROAD_PRESETS.map((p, idx) => (
+          {/* Road Corridor & Location Definition Studio */}
+          <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-slate-200 pb-2.5">
+              <div>
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
+                  <MapPin className="w-4 h-4 text-blue-700" />
+                  Road Trench Corridor & Geography
+                </span>
+                <p className="text-[11px] text-slate-500 mt-0.5">
+                  Plot points anywhere on the city map or select a quick corridor scenario to test real-time clash radar.
+                </p>
+              </div>
+
+              {/* Mode Toggle Tabs */}
+              <div className="flex items-center gap-1 bg-white p-1 rounded-md border border-slate-200 self-start sm:self-auto">
                 <button
-                  key={idx}
                   type="button"
-                  onClick={() => handleSelectPreset(p)}
-                  className={`text-xs px-2.5 py-1.5 rounded font-medium border text-left transition-all ${
-                    locationName === p.name
-                      ? 'bg-blue-700 text-white border-blue-700'
-                      : 'bg-white text-gray-700 border-gray-200 hover:border-blue-500'
+                  onClick={() => setCorridorMode('map')}
+                  className={`text-xs px-2.5 py-1 rounded font-medium transition-colors flex items-center gap-1.5 ${
+                    corridorMode === 'map'
+                      ? 'bg-blue-700 text-white shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
-                  <div>{p.name}</div>
-                  <div className={`text-[10px] ${locationName === p.name ? 'text-blue-100' : 'text-gray-500'}`}>
-                    {p.clashNote}
-                  </div>
+                  <Navigation className="w-3.5 h-3.5" />
+                  <span>Plot Anywhere on Map</span>
                 </button>
-              ))}
+                <button
+                  type="button"
+                  onClick={() => setCorridorMode('presets')}
+                  className={`text-xs px-2.5 py-1 rounded font-medium transition-colors flex items-center gap-1.5 ${
+                    corridorMode === 'presets'
+                      ? 'bg-blue-700 text-white shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                  <span>Demo Presets</span>
+                </button>
+              </div>
             </div>
+
+            {corridorMode === 'map' ? (
+              <div className="space-y-3">
+                <CorridorPlotter
+                  coordinates={coordinates}
+                  onChange={setCoordinates}
+                  onLocationDetected={(loc, w) => {
+                    setLocationName(loc);
+                    setWard(w);
+                  }}
+                />
+                <div className="text-[11px] text-slate-500 flex items-center gap-1.5 bg-blue-50/50 p-2 rounded border border-blue-100">
+                  <Info className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                  <span>
+                    You can plot any road corridor across Greater Chennai or custom municipal limits. Click the map to draw the exact trench path.
+                  </span>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <span className="text-[11px] font-semibold text-slate-600">
+                  Select a known corridor scenario to test Dig-Once spatio-temporal clash warnings:
+                </span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {ROAD_PRESETS.map((p, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => handleSelectPreset(p)}
+                      className={`text-xs p-3 rounded font-medium border text-left transition-all ${
+                        locationName === p.name
+                          ? 'bg-blue-700 text-white border-blue-700 shadow-sm'
+                          : 'bg-white text-gray-700 border-gray-200 hover:border-blue-500'
+                      }`}
+                    >
+                      <div className="font-bold flex items-center justify-between">
+                        <span>{p.name}</span>
+                        <span className={`text-[10px] px-1.5 py-0.5 rounded font-normal ${locationName === p.name ? 'bg-blue-800 text-white' : 'bg-slate-100 text-slate-600'}`}>
+                          {p.ward}
+                        </span>
+                      </div>
+                      <div className={`text-[10px] mt-1 ${locationName === p.name ? 'text-blue-100' : 'text-gray-500'}`}>
+                        {p.clashNote}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
